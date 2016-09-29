@@ -54,7 +54,8 @@ class ImageAdapter extends BaseAdapter {
         if (moviesList.size() != 0) {
             try {
                 imagePath = moviesList.get(position).getPoster_path();
-                imagePath = TabNowShowingFragment.imgBaseUrl + imagePath + TabNowShowingFragment.APIKEY;
+                imagePath = TabNowShowingFragment.imgBaseUrl
+                        + imagePath + Config.PREFIX_API_KEY + Config.THE_MOVIE_DB_API_KEY;
                 Picasso.with(mContext).load(imagePath).placeholder(R.drawable.ic_place_holder)
                         .error(R.drawable.ic_error_fallback).into(imageView, new Callback() {
                     @Override
