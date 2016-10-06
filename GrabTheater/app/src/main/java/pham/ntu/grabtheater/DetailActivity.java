@@ -190,15 +190,13 @@ public class DetailActivity extends ActionBarActivity {
             backdropImagePath = mMovie.getBackdrop_path();
             if(backdropImagePath.equals("null")) backdropImageView.setVisibility(View.GONE);
             else {
-                backdropImagePath = TabNowShowingFragment.imgBaseUrl
-                        + backdropImagePath + Config.PREFIX_API_KEY + Config.THE_MOVIE_DB_API_KEY;
+                backdropImagePath = TabNowShowingFragment.imgBaseUrl + backdropImagePath + TabNowShowingFragment.APIKEY;
                 Picasso.with(getActivity()).load(backdropImagePath).resize(600,
                         400).onlyScaleDown().centerInside().placeholder(R.drawable.ic_place_holder)
                         .error(R.drawable.ic_error_fallback).into(backdropImageView);
             }
             posterImagePath = mMovie.getPoster_path();
-            posterImagePath = TabNowShowingFragment.imgBaseUrl
-                    + posterImagePath + Config.PREFIX_API_KEY + Config.THE_MOVIE_DB_API_KEY;
+            posterImagePath = TabNowShowingFragment.imgBaseUrl + posterImagePath + TabNowShowingFragment.APIKEY;
 
             Picasso.with(getActivity()).load(posterImagePath).resize(150,
                     300).centerInside().placeholder(R.drawable.ic_place_holder)
