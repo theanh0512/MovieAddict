@@ -1,8 +1,19 @@
 <resources>
-    <string name="app_name">GrabTheater</string>
+    <string name="app_name">Popular Movies</string>
     <string name="action_settings">Settings</string>
 
+    <string name="title_activity_settings">Settings</string>
+
     <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="title_activity_detail">DetailActivity</string>
+
+    <string name="pref_sort_types_label">Sort</string>
+    <string name="pref_sort_types_label_toprated">Top Rated</string>
+    <string name="pref_sort_types_label_nowplaying">Now Playing</string>
+    <string name="pref_sort_types_label_popular">Popular</string>
+
+    <string name="pref_sort_types_key" translatable="false">types</string>
+    <string name="pref_sort_types_nowplaying" translatable="false">now_playing</string>
+    <string name="pref_sort_types_popular" translatable="false">popular</string>
+    <string name="pref_sort_types_toprated" translatable="false">top_rated</string>
 </resources>

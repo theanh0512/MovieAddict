@@ -2,8 +2,10 @@ package pham.ntu.grabtheater;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -54,7 +56,9 @@ public class TabNowShowingFragment extends Fragment {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        GetDataTask dataTaskForNowShowing = new GetDataTask(getActivity(),MainActivity.additionalUrl,true,pageNum);
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        String additionalUrl = preferences.getString(getString(R.string.pref_sort_types_key),getString(R.string.pref_sort_types_nowplaying));
+        GetDataTask dataTaskForNowShowing = new GetDataTask(getActivity(),additionalUrl,true,pageNum);
         dataTaskForNowShowing.execute();
         super.onCreate(savedInstanceState);
     }
