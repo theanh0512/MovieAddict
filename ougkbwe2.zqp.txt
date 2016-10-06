@@ -1,0 +1,25 @@
+﻿Revert "Revert "Refactor""
+
+This reverts commit d103e0f3c3e7ff6d026eea28f349115cdfbe14c8.
+
+# Conflicts:
+#	GrabTheater/.idea/gradle.xml
+
+# Please enter the commit message for your changes. Lines starting
+# with '#' will be ignored, and an empty message aborts the commit.
+# On branch master
+# Your branch is up-to-date with 'origin/master'.
+#
+# You are currently reverting commit d103e0f.
+#
+# Changes to be committed:
+#	deleted:    GrabTheater/.idea/.name
+#	modified:   GrabTheater/.idea/gradle.xml
+#	modified:   GrabTheater/.idea/vcs.xml
+#	modified:   GrabTheater/app/src/main/java/pham/ntu/grabtheater/Config.java
+#	modified:   GrabTheater/app/src/main/java/pham/ntu/grabtheater/DetailActivity.java
+#	modified:   GrabTheater/app/src/main/java/pham/ntu/grabtheater/GetDataTask.java
+#	modified:   GrabTheater/app/src/main/java/pham/ntu/grabtheater/ImageAdapter.java
+#	modified:   GrabTheater/app/src/main/java/pham/ntu/grabtheater/TabNowShowingFragment.java
+#
+

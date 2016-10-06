@@ -33,7 +33,7 @@ public class TabNowShowingFragment extends Fragment {
     // TODO: Rename and change types of parameters
 
     public static String imgBaseUrl = "http://image.tmdb.org/t/p/w500/";
-    public static final String APIKEY = "?api_key=d11a2b27e5b18d3f632cf033984b8faf";
+    //public static final String PREFIX_API_KEY = "?api_key=";
     String movieTitle = null;
     public static GridView gridview;
     public static ImageAdapter mMovieImageAdapter;

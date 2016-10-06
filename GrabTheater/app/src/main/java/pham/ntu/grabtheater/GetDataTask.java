@@ -6,7 +6,6 @@ package pham.ntu.grabtheater;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
-import android.widget.ArrayAdapter;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -26,7 +25,8 @@ import java.util.List;
  * Created by user on 12/24/2015.
  */
 public class GetDataTask extends AsyncTask<String, Void, List<String>> {
-    final String APIKEY = "?api_key=d11a2b27e5b18d3f632cf033984b8faf";
+    private final String LOG_TAG = GetDataTask.class.getSimpleName();
+    //final String PREFIX_API_KEY = "?api_key=";
     String result = "results";
     String mUrlString = "http://api.themoviedb.org/3/movie/";
     String page = "&page=";
@@ -51,7 +51,7 @@ public class GetDataTask extends AsyncTask<String, Void, List<String>> {
 
     @Override
     protected List<String> doInBackground(String... strings) {
-        mUrlString = mUrlString+additionalUrl+APIKEY;
+        mUrlString = mUrlString+additionalUrl + Config.PREFIX_API_KEY + Config.THE_MOVIE_DB_API_KEY;
         if(containPages) {
             page += pageNum;
             mUrlString += page;
@@ -84,6 +84,7 @@ public class GetDataTask extends AsyncTask<String, Void, List<String>> {
 
             //parse json data
             parseJsonData(jsonData);
+            Log.i(LOG_TAG,"URL Queried: " + mUrlString);
         } catch (MalformedURLException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -111,7 +112,8 @@ public class GetDataTask extends AsyncTask<String, Void, List<String>> {
             for (int i = 0; i < len-1; i++) {
                 String s = "";
                 JSONObject json = jArray.getJSONObject(i);
-                if (additionalUrl == MainActivity.additionalUrl||additionalUrl== DetailActivity.DetailFragment.additionalUrl) {
+                if (additionalUrl == MainActivity.additionalUrl||additionalUrl==
+                        DetailActivity.DetailFragment.additionalUrl) {
                     String poster_path = json.getString("poster_path");
                     boolean adult = json.getBoolean("adult");
                     String overview = json.getString("overview");
