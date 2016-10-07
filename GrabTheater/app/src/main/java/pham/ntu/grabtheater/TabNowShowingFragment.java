@@ -56,11 +56,22 @@ public class TabNowShowingFragment extends Fragment {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+
+        super.onCreate(savedInstanceState);
+    }
+
+    private void updateMovieList() {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
         String additionalUrl = preferences.getString(getString(R.string.pref_sort_types_key),getString(R.string.pref_sort_types_nowplaying));
-        GetDataTask dataTaskForNowShowing = new GetDataTask(getActivity(),additionalUrl,true,pageNum);
+        MainActivity.additionalUrl = additionalUrl;
+        GetDataTask dataTaskForNowShowing = new GetDataTask(getActivity(),MainActivity.additionalUrl,true,pageNum);
         dataTaskForNowShowing.execute();
-        super.onCreate(savedInstanceState);
+    }
+
+    @Override
+    public void onStart() {
+        updateMovieList();
+        super.onStart();
     }
 
     @Override
@@ -68,7 +79,7 @@ public class TabNowShowingFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_tab_now_showing, container, false);
-        while(TabNowShowingFragment.moviesList.size()==0){}
+        //while(TabNowShowingFragment.moviesList.size()==0){}
         gridview = (GridView) rootView.findViewById(R.id.gridView);
         mMovieImageAdapter = new ImageAdapter(getActivity(),TabNowShowingFragment.moviesList);
         gridview.setAdapter(mMovieImageAdapter);
