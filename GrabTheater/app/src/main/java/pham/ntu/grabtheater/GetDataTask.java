@@ -167,5 +167,6 @@ public class GetDataTask extends AsyncTask<String, Void, List<String>> {
 
     @Override
     protected void onPostExecute(List<String> strings) {
+        if(additionalUrl==MainActivity.additionalUrl) TabNowShowingFragment.mMovieImageAdapter.notifyDataSetChanged();
     }
 }
