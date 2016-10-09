@@ -2,6 +2,8 @@ package pham.ntu.grabtheater;
 
 import android.app.FragmentManager;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentTransaction;
 import android.net.Uri;
 import android.os.Bundle;
@@ -23,9 +25,19 @@ public class MainActivity extends AppCompatActivity implements TabNowShowingFrag
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        String additionalUrl = preferences.getString(getString(R.string.pref_sort_types_key),getString(R.string.pref_sort_types_nowplaying));
+        MainActivity.additionalUrl = additionalUrl;
+
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
-        tabLayout.addTab(tabLayout.newTab().setText("Now showing"));
-        tabLayout.addTab(tabLayout.newTab().setText("Favourites"));
+
+        if(MainActivity.additionalUrl.equals(getString(R.string.pref_sort_types_nowplaying)))
+            tabLayout.addTab(tabLayout.newTab().setText(R.string.pref_sort_types_label_nowplaying));
+        else if(MainActivity.additionalUrl.equals(getString(R.string.pref_sort_types_popular)))
+            tabLayout.addTab(tabLayout.newTab().setText(R.string.pref_sort_types_label_popular));
+        else
+            tabLayout.addTab(tabLayout.newTab().setText(R.string.pref_sort_types_label_toprated));
+        tabLayout.addTab(tabLayout.newTab().setText(getString(R.string.title_tab_favourites)));
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
 
         final ViewPager viewPager = (ViewPager) findViewById(R.id.pager);

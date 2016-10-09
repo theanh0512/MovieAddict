@@ -32,8 +32,6 @@ public class TabNowShowingFragment extends Fragment {
 
     // TODO: Rename and change types of parameters
 
-    public static String imgBaseUrl = "http://image.tmdb.org/t/p/w500/";
-    //public static final String PREFIX_API_KEY = "?api_key=";
     String movieTitle = null;
     public static GridView gridview;
     public static ImageAdapter mMovieImageAdapter;
@@ -61,9 +59,6 @@ public class TabNowShowingFragment extends Fragment {
     }
 
     private void updateMovieList() {
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        String additionalUrl = preferences.getString(getString(R.string.pref_sort_types_key),getString(R.string.pref_sort_types_nowplaying));
-        MainActivity.additionalUrl = additionalUrl;
         GetDataTask dataTaskForNowShowing = new GetDataTask(getActivity(),MainActivity.additionalUrl,true,pageNum);
         dataTaskForNowShowing.execute();
     }
@@ -87,8 +82,6 @@ public class TabNowShowingFragment extends Fragment {
         gridview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View v,
                                     int position, long id) {
-//                movieTitle = moviesList.get(position).getTitle();
-//                Toast.makeText(getActivity(), movieTitle, Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(getActivity(), DetailActivity.class).putExtra("Movie",
                         TabNowShowingFragment.moviesList.get(position));
                 startActivity(intent);
