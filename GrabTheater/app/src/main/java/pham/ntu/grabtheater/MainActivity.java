@@ -1,5 +1,6 @@
 package pham.ntu.grabtheater;
 
+import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -22,14 +23,21 @@ import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 
-public class MainActivity extends AppCompatActivity implements TabNowShowingFragment.OnFragmentInteractionListener, TabFavouritesFragment.OnFragmentInteractionListener {
+public class MainActivity extends AppCompatActivity implements TabNowShowingFragment.OnFragmentInteractionListener, TabFavouritesFragment.OnFragmentInteractionListener, TabNowShowingFragment.ItemsListClickHandler {
 
     public static String additionalUrl = "now_playing";
+    boolean dualPane;
+    Fragment detailFragment;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if(isOnline()) {
             setContentView(R.layout.activity_main);
+
+            detailFragment = (Fragment) getFragmentManager()
+                    .findFragmentById(R.id.details_frag);
+            dualPane = (detailFragment!=null && detailFragment.isVisible());
+
             Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
             setSupportActionBar(toolbar);
 
@@ -131,5 +139,16 @@ public class MainActivity extends AppCompatActivity implements TabNowShowingFrag
     @Override
     public void onFragmentInteraction(Uri uri) {
 
+    }
+
+    @Override
+    public void onHandleItemClick(int position) {
+        if(dualPane){
+            DetailActivity.DetailFragment detailFragment = new DetailActivity.DetailFragment();
+            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+            transaction.replace(R.id.details_frag,detailFragment);
+            transaction.addToBackStack(null);
+            transaction.commit();
+        }
     }
 }

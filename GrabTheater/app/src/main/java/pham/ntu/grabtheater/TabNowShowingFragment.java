@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -41,6 +42,7 @@ public class TabNowShowingFragment extends Fragment {
     int pageNum =1;
     Button nextButton, previousButton;
     public static int totalPages =0;
+    ItemsListClickHandler handler;
 
     public TabNowShowingFragment() {
         // Required empty public constructor
@@ -83,6 +85,7 @@ public class TabNowShowingFragment extends Fragment {
         gridview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View v,
                                     int position, long id) {
+                handler.onHandleItemClick(position);
                 DetailActivity.DetailFragment detailFragment = (DetailActivity.DetailFragment) getFragmentManager()
                         .findFragmentById(R.id.details_frag);
                 if (detailFragment == null) {
@@ -153,6 +156,13 @@ public class TabNowShowingFragment extends Fragment {
         } else {
             throw new RuntimeException(context.toString()
                     + " must implement OnFragmentInteractionListener");
+        }
+        try {
+            handler = (ItemsListClickHandler) getActivity();
+
+        }
+        catch (ClassCastException e){
+            Log.e(TabNowShowingFragment.class.getSimpleName(),"The activity does not implement the interface");
         }
     }
 
