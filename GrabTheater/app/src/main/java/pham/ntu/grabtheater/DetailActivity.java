@@ -84,6 +84,10 @@ public class DetailActivity extends ActionBarActivity {
         private static final int RECOVERY_DIALOG_REQUEST = 1;
         com.like.LikeButton likeButton;
         boolean isLiked = false;
+        TextView titleTextview;
+        TextView overviewTextview;
+        TextView releaseDateTextview;
+        TextView voteAverageTextview;
 
 
         public DetailFragment() {
@@ -111,14 +115,13 @@ public class DetailActivity extends ActionBarActivity {
                 likeButton = (com.like.LikeButton) rootView.findViewById(R.id.like_button);
                 if(intent.hasExtra("Hide Like Button")) likeButton.setVisibility(View.GONE);
                 setUpImageViews(rootView);
-                final TextView titleTextview = (TextView) rootView.findViewById(R.id.title_textview);
-                titleTextview.setText(mMovie.getTitle());
-                final TextView overviewTextview = (TextView) rootView.findViewById(R.id.overview_textview);
-                overviewTextview.setText(mMovie.getOverview());
-                final TextView releaseDateTextview = (TextView) rootView.findViewById(R.id.release_date_textview);
-                releaseDateTextview.setText(mMovie.getRelease_date());
-                final TextView voteAverageTextview = (TextView) rootView.findViewById(R.id.vote_average_textview);
-                voteAverageTextview.setText(Double.toString(mMovie.getVote_average())+"/10");
+
+                titleTextview = (TextView) rootView.findViewById(R.id.title_textview);
+                overviewTextview = (TextView) rootView.findViewById(R.id.overview_textview);
+                releaseDateTextview = (TextView) rootView.findViewById(R.id.release_date_textview);
+                voteAverageTextview = (TextView) rootView.findViewById(R.id.vote_average_textview);
+
+                updateViews(mMovie);
 
                 additionalUrl = mMovie.getId()+"/similar";
                 GetDataTask dataTaskForDetailActivity = new GetDataTask(this.getActivity(),additionalUrl,true,1);
@@ -157,35 +160,47 @@ public class DetailActivity extends ActionBarActivity {
                     }
                 });
 
-                YouTubePlayerSupportFragment youTubePlayerFragment = YouTubePlayerSupportFragment.newInstance();
-                FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
-                transaction.add(R.id.youtube_fragment, youTubePlayerFragment).commit();
-
-                youTubePlayerFragment.initialize(Config.YOUTUBE_API_KEY, new OnInitializedListener() {
-
-                    @Override
-                    public void onInitializationSuccess(Provider arg0, YouTubePlayer youTubePlayer, boolean b) {
-                        if (!b) {
-                            YPlayer = youTubePlayer;
-                            if(trailersList.size()!=0){
-                                String video = trailersList.get(0).getKey();
-                                YPlayer.cueVideo(video);
-                            }
-
-//                            YPlayer.loadVideo("2zNSgSzhBfM");
-//                            YPlayer.play();
-                        }
-                    }
-
-                    @Override
-                    public void onInitializationFailure(Provider arg0, YouTubeInitializationResult arg1) {
-                        // TODO Auto-generated method stub
-
-                    }
-                });
+                addYoutubeFragment();
 
             }
             return rootView;
+        }
+
+        public void updateViews(Movie movie) {
+            this.mMovie = movie;
+            titleTextview.setText(mMovie.getTitle());
+            overviewTextview.setText(mMovie.getOverview());
+            releaseDateTextview.setText(mMovie.getRelease_date());
+            voteAverageTextview.setText(Double.toString(mMovie.getVote_average())+"/10");
+        }
+
+        private void addYoutubeFragment() {
+            YouTubePlayerSupportFragment youTubePlayerFragment = YouTubePlayerSupportFragment.newInstance();
+            FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
+            transaction.add(R.id.youtube_fragment, youTubePlayerFragment).commit();
+
+            youTubePlayerFragment.initialize(Config.YOUTUBE_API_KEY, new OnInitializedListener() {
+
+                @Override
+                public void onInitializationSuccess(Provider arg0, YouTubePlayer youTubePlayer, boolean b) {
+                    if (!b) {
+                        YPlayer = youTubePlayer;
+                        if(trailersList.size()!=0){
+                            String video = trailersList.get(0).getKey();
+                            YPlayer.cueVideo(video);
+                        }
+
+//                            YPlayer.loadVideo("2zNSgSzhBfM");
+//                            YPlayer.play();
+                    }
+                }
+
+                @Override
+                public void onInitializationFailure(Provider arg0, YouTubeInitializationResult arg1) {
+                    // TODO Auto-generated method stub
+
+                }
+            });
         }
 
         private void setUpImageViews(View rootView) {

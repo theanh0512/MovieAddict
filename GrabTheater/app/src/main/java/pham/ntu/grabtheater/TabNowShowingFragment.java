@@ -7,6 +7,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -82,9 +83,23 @@ public class TabNowShowingFragment extends Fragment {
         gridview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View v,
                                     int position, long id) {
-                Intent intent = new Intent(getActivity(), DetailActivity.class).putExtra("Movie",
-                        TabNowShowingFragment.moviesList.get(position));
-                startActivity(intent);
+                DetailActivity.DetailFragment detailFragment = (DetailActivity.DetailFragment) getFragmentManager()
+                        .findFragmentById(R.id.details_frag);
+                if (detailFragment == null) {
+                    Intent intent = new Intent(getActivity(), DetailActivity.class).putExtra("Movie",
+                            TabNowShowingFragment.moviesList.get(position));
+                    startActivity(intent);
+                } else {
+                    // DisplayFragment (Fragment B) is in the layout (tablet layout),
+                    // so tell the fragment to update
+                    DetailActivity.DetailFragment detailFragment1 = new DetailActivity.DetailFragment();
+                    FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+                    fragmentTransaction.replace(detailFragment.getId(), detailFragment1,
+                            DetailActivity.DetailFragment.class.getName());
+                    fragmentTransaction.commit();
+                    detailFragment1.updateViews(TabNowShowingFragment.moviesList.get(position));
+                }
+
             }
         });
 
@@ -130,13 +145,6 @@ public class TabNowShowingFragment extends Fragment {
         return rootView;
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
-    }
-
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -167,6 +175,10 @@ public class TabNowShowingFragment extends Fragment {
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
+    }
+
+    public interface ItemsListClickHandler{
+        public void onHandleItemClick(int position);
     }
 
 }
