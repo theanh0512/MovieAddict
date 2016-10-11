@@ -8,6 +8,10 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="title_activity_detail">DetailActivity</string>
 
+    <string name="alert_message">There is no internet connection</string>
+    <string name="alert_title">No Internet</string>
+    <string name="alert_button">Close</string>
+
     <string name="pref_sort_types_label">Sort</string>
     <string name="pref_sort_types_label_toprated">Top Rated</string>
     <string name="pref_sort_types_label_nowplaying">Now Playing</string>

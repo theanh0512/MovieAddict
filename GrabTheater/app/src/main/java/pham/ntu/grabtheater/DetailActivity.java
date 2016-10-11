@@ -115,6 +115,10 @@ public class DetailActivity extends ActionBarActivity {
                 titleTextview.setText(mMovie.getTitle());
                 final TextView overviewTextview = (TextView) rootView.findViewById(R.id.overview_textview);
                 overviewTextview.setText(mMovie.getOverview());
+                final TextView releaseDateTextview = (TextView) rootView.findViewById(R.id.release_date_textview);
+                releaseDateTextview.setText(mMovie.getRelease_date());
+                final TextView voteAverageTextview = (TextView) rootView.findViewById(R.id.vote_average_textview);
+                voteAverageTextview.setText(Double.toString(mMovie.getVote_average())+"/10");
 
                 additionalUrl = mMovie.getId()+"/similar";
                 GetDataTask dataTaskForDetailActivity = new GetDataTask(this.getActivity(),additionalUrl,true,1);

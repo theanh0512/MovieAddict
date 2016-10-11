@@ -41,15 +41,33 @@
                 android:layout_weight="1"
                 android:scaleType="fitXY"
             />
-            <TextView
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/title_textview"
+                android:orientation="vertical"
                 android:layout_marginTop="10dp"
                 android:layout_marginLeft="6dp"
-                android:layout_weight="2"
-                android:textSize="20dp"
-                android:textColor="#bae7ef"/>
+                android:layout_weight="2">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/title_textview"
+                    android:textSize="20dp"
+                    android:textColor="#bae7ef"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/release_date_textview"
+                    android:textSize="15dp"
+                    android:textColor="#bae7ef"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/vote_average_textview"
+                    android:textSize="15dp"
+                    android:textColor="#bae7ef"/>
+            </LinearLayout>
+
             <com.like.LikeButton
                 app:icon_type="heart"
                 app:icon_size="25dp"
