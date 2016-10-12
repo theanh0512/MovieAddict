@@ -36,8 +36,8 @@ public class TabFavouritesFragment extends Fragment {
         likedMovies = getActivity().getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
         Gson gson = new Gson();
         moviesFavouriteList.clear();
-        for(int i=0;i< DetailActivity.DetailFragment.moviesTitleList.size();i++){
-            String json = likedMovies.getString(DetailActivity.DetailFragment.moviesTitleList.get(i), "");
+        for(int i=0;i< DetailFragment.moviesTitleList.size();i++){
+            String json = likedMovies.getString(DetailFragment.moviesTitleList.get(i), "");
             Movie movie = gson.fromJson(json, Movie.class);
             moviesFavouriteList.add(movie);
         }
@@ -57,8 +57,11 @@ public class TabFavouritesFragment extends Fragment {
         favourite_gridview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View v,
                                     int position, long id) {
-                Intent intent = new Intent(getActivity(), DetailActivity.class).putExtra("Movie",
-                        moviesFavouriteList.get(position)).putExtra("Hide Like Button",true);
+                Movie movie = moviesFavouriteList.get(position);
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("Movie",movie);
+                bundle.putBoolean("Hide Like Button",true);
+                Intent intent = new Intent(getActivity(), DetailActivity.class).putExtra("Bundle",bundle);
                 startActivity(intent);
             }
         });

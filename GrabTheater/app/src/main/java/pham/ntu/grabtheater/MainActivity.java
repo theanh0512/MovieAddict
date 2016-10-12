@@ -1,7 +1,5 @@
 package pham.ntu.grabtheater;
 
-import android.app.Fragment;
-import android.app.FragmentManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -9,7 +7,6 @@ import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.preference.PreferenceManager;
-import android.provider.SyncStateContract;
 import android.support.v4.app.FragmentTransaction;
 import android.net.Uri;
 import android.os.Bundle;
@@ -27,56 +24,55 @@ public class MainActivity extends AppCompatActivity implements TabNowShowingFrag
 
     public static String additionalUrl = "now_playing";
     boolean dualPane;
-    Fragment detailFragment;
+    View detailFrame;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if(isOnline()) {
             setContentView(R.layout.activity_main);
 
-            detailFragment = (Fragment) getFragmentManager()
-                    .findFragmentById(R.id.details_frag);
-            dualPane = (detailFragment!=null && detailFragment.isVisible());
-
-            Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-            setSupportActionBar(toolbar);
+            detailFrame = findViewById(R.id.detail_frame);
+            dualPane = (detailFrame !=null && detailFrame.getVisibility()==View.VISIBLE);
 
             SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
             String additionalUrl = preferences.getString(getString(R.string.pref_sort_types_key), getString(R.string.pref_sort_types_nowplaying));
             MainActivity.additionalUrl = additionalUrl;
+            if(!dualPane) {
+                Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+                setSupportActionBar(toolbar);
+                TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
 
-            TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
+                if (MainActivity.additionalUrl.equals(getString(R.string.pref_sort_types_nowplaying)))
+                    tabLayout.addTab(tabLayout.newTab().setText(R.string.pref_sort_types_label_nowplaying));
+                else if (MainActivity.additionalUrl.equals(getString(R.string.pref_sort_types_popular)))
+                    tabLayout.addTab(tabLayout.newTab().setText(R.string.pref_sort_types_label_popular));
+                else
+                    tabLayout.addTab(tabLayout.newTab().setText(R.string.pref_sort_types_label_toprated));
+                tabLayout.addTab(tabLayout.newTab().setText(getString(R.string.title_tab_favourites)));
+                tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
 
-            if (MainActivity.additionalUrl.equals(getString(R.string.pref_sort_types_nowplaying)))
-                tabLayout.addTab(tabLayout.newTab().setText(R.string.pref_sort_types_label_nowplaying));
-            else if (MainActivity.additionalUrl.equals(getString(R.string.pref_sort_types_popular)))
-                tabLayout.addTab(tabLayout.newTab().setText(R.string.pref_sort_types_label_popular));
-            else
-                tabLayout.addTab(tabLayout.newTab().setText(R.string.pref_sort_types_label_toprated));
-            tabLayout.addTab(tabLayout.newTab().setText(getString(R.string.title_tab_favourites)));
-            tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
+                final ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
+                final PagerAdapter adapter = new PagerAdapter
+                        (getSupportFragmentManager(), tabLayout.getTabCount());
+                viewPager.setAdapter(adapter);
+                viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
+                tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+                    @Override
+                    public void onTabSelected(TabLayout.Tab tab) {
+                        viewPager.setCurrentItem(tab.getPosition());
+                    }
 
-            final ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
-            final PagerAdapter adapter = new PagerAdapter
-                    (getSupportFragmentManager(), tabLayout.getTabCount());
-            viewPager.setAdapter(adapter);
-            viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
-            tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
-                @Override
-                public void onTabSelected(TabLayout.Tab tab) {
-                    viewPager.setCurrentItem(tab.getPosition());
-                }
+                    @Override
+                    public void onTabUnselected(TabLayout.Tab tab) {
 
-                @Override
-                public void onTabUnselected(TabLayout.Tab tab) {
+                    }
 
-                }
+                    @Override
+                    public void onTabReselected(TabLayout.Tab tab) {
 
-                @Override
-                public void onTabReselected(TabLayout.Tab tab) {
-
-                }
-            });
+                    }
+                });
+            }
         }
         else{
             try {
@@ -143,12 +139,20 @@ public class MainActivity extends AppCompatActivity implements TabNowShowingFrag
 
     @Override
     public void onHandleItemClick(int position) {
-        if(dualPane){
-            DetailActivity.DetailFragment detailFragment = new DetailActivity.DetailFragment();
+        Movie movie = TabNowShowingFragment.moviesList.get(position);
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("Movie",movie);
+        if(dualPane) {
+            DetailFragment detailFragment = new DetailFragment();
+            detailFragment.setArguments(bundle);
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-            transaction.replace(R.id.details_frag,detailFragment);
+            transaction.replace(R.id.detail_frame, detailFragment);
             transaction.addToBackStack(null);
             transaction.commit();
+        }
+        else{
+            Intent intent = new Intent(this, DetailActivity.class).putExtra("Bundle",bundle);
+            startActivity(intent);
         }
     }
 }

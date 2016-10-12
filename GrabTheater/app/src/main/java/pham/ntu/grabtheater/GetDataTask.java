@@ -105,7 +105,7 @@ public class GetDataTask extends AsyncTask<String, Void, List<String>> {
             jsonArray.clear();
 
             if(additionalUrl==MainActivity.additionalUrl) TabNowShowingFragment.moviesList.clear();
-            if(additionalUrl.contains("similar")) DetailActivity.DetailFragment.moviesList.clear();
+            if(additionalUrl.contains("similar")) DetailFragment.moviesList.clear();
 
             int len = jArray.length();
             if(jArray.length()==1) len=2;
@@ -113,7 +113,7 @@ public class GetDataTask extends AsyncTask<String, Void, List<String>> {
                 String s = "";
                 JSONObject json = jArray.getJSONObject(i);
                 if (additionalUrl == MainActivity.additionalUrl||additionalUrl==
-                        DetailActivity.DetailFragment.additionalUrl) {
+                        DetailFragment.additionalUrl) {
                     String poster_path = json.getString("poster_path");
                     boolean adult = json.getBoolean("adult");
                     String overview = json.getString("overview");
@@ -141,7 +141,7 @@ public class GetDataTask extends AsyncTask<String, Void, List<String>> {
                                 overview, release_date, poster_path, popularity, title, video, vote_average, vote_count));
                     }
                     else{
-                        DetailActivity.DetailFragment.moviesList.add(new Movie(adult, backdrop_path, genre_ids, id, original_language, original_title,
+                        DetailFragment.moviesList.add(new Movie(adult, backdrop_path, genre_ids, id, original_language, original_title,
                                 overview, release_date, poster_path, popularity, title, video, vote_average, vote_count));
                     }
                 }
@@ -153,7 +153,7 @@ public class GetDataTask extends AsyncTask<String, Void, List<String>> {
                     String site =  json.getString("site");
                     int size = json.getInt("size");
                     String type = json.getString("type");
-                    DetailActivity.DetailFragment.trailersList.add(new Video(id,iso_639_1,key,name,site,size,type));
+                    DetailFragment.trailersList.add(new Video(id,iso_639_1,key,name,site,size,type));
                 }
             }
 

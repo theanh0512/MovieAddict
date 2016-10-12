@@ -86,22 +86,22 @@ public class TabNowShowingFragment extends Fragment {
             public void onItemClick(AdapterView<?> parent, View v,
                                     int position, long id) {
                 handler.onHandleItemClick(position);
-                DetailActivity.DetailFragment detailFragment = (DetailActivity.DetailFragment) getFragmentManager()
-                        .findFragmentById(R.id.details_frag);
-                if (detailFragment == null) {
-                    Intent intent = new Intent(getActivity(), DetailActivity.class).putExtra("Movie",
-                            TabNowShowingFragment.moviesList.get(position));
-                    startActivity(intent);
-                } else {
-                    // DisplayFragment (Fragment B) is in the layout (tablet layout),
-                    // so tell the fragment to update
-                    DetailActivity.DetailFragment detailFragment1 = new DetailActivity.DetailFragment();
-                    FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
-                    fragmentTransaction.replace(detailFragment.getId(), detailFragment1,
-                            DetailActivity.DetailFragment.class.getName());
-                    fragmentTransaction.commit();
-                    detailFragment1.updateViews(TabNowShowingFragment.moviesList.get(position));
-                }
+//                DetailFragment detailFrame = (DetailFragment) getFragmentManager()
+//                        .findFragmentById(R.id.details_frag);
+//                if (detailFrame == null) {
+//                    Intent intent = new Intent(getActivity(), DetailActivity.class).putExtra("Movie",
+//                            TabNowShowingFragment.moviesList.get(position));
+//                    startActivity(intent);
+//                } else {
+//                    // DisplayFragment (Fragment B) is in the layout (tablet layout),
+//                    // so tell the fragment to update
+//                    DetailActivity.DetailFragment detailFragment1 = new DetailActivity.DetailFragment();
+//                    FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+//                    fragmentTransaction.replace(detailFrame.getId(), detailFragment1,
+//                            DetailActivity.DetailFragment.class.getName());
+//                    fragmentTransaction.commit();
+//                    detailFragment1.updateViews(TabNowShowingFragment.moviesList.get(position));
+//                }
 
             }
         });

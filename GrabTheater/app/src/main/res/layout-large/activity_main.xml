@@ -14,39 +14,16 @@ tools:context="pham.ntu.grabtheater.MainActivity">
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         tools:layout="@layout/fragment_tab_now_showing" />
-    <fragment class="pham.ntu.grabtheater.DetailActivity$DetailFragment"
-        android:id="@+id/details_frag"
-        android:layout_weight="1"
+    <!--<fragment class="pham.ntu.grabtheater.DetailActivity$DetailFragment"-->
+        <!--android:id="@+id/details_frag"-->
+        <!--android:layout_weight="1"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="match_parent"-->
+        <!--tools:layout="@layout/fragment_detail" />-->
+    <FrameLayout
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        tools:layout="@layout/fragment_detail" />
-
-    <android.support.v7.widget.Toolbar
-        android:id="@+id/toolbar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:layout_alignParentTop="true"
-        android:background="?attr/colorPrimary"
-        android:elevation="6dp"
-        android:minHeight="?attr/actionBarSize"
-        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
-
-    <android.support.design.widget.TabLayout
-        android:id="@+id/tab_layout"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:layout_below="@+id/toolbar"
-        android:background="?attr/colorPrimary"
-        android:elevation="6dp"
-        android:minHeight="?attr/actionBarSize"
-        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"/>
-
-    <android.support.v4.view.ViewPager
-        android:id="@+id/pager"
-        android:layout_width="wrap_content"
-        android:layout_height="fill_parent"
-        android:layout_below="@id/tab_layout"/>
+        android:id="@+id/detail_frame">
+    </FrameLayout>
 </LinearLayout>
