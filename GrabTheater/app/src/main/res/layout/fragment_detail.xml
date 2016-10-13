@@ -26,7 +26,7 @@
             android:layout_height="150dp"
             android:layout_below="@+id/backdrop_image"
             android:orientation="horizontal"
-            android:background="#2d66a7"
+            android:background="@color/colorPrimary"
             android:paddingStart="0dp"
             android:paddingTop="0dp"
             android:paddingBottom="0dp"
@@ -52,20 +52,20 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:id="@+id/title_textview"
-                    android:textSize="20dp"
-                    android:textColor="#bae7ef"/>
+                    android:textSize="20sp"
+                    android:textColor="@color/colorPrimaryText"/>
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:id="@+id/release_date_textview"
-                    android:textSize="15dp"
-                    android:textColor="#bae7ef"/>
+                    android:textSize="15sp"
+                    android:textColor="@color/colorPrimaryText"/>
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:id="@+id/vote_average_textview"
-                    android:textSize="15dp"
-                    android:textColor="#bae7ef"/>
+                    android:textSize="15sp"
+                    android:textColor="@color/colorPrimaryText"/>
             </LinearLayout>
 
             <com.like.LikeButton
@@ -79,7 +79,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="#000000"
+            android:textColor="@color/colorPrimaryText"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:id="@+id/overview_textview"
             android:layout_marginTop="30dp"
@@ -101,9 +101,9 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="#000000"
+            android:textColor="@color/colorPrimaryText"
             android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="Related Movies"
+            android:text="@string/related_movies"
             android:textStyle="bold"
             android:id="@+id/relatedMovies_textview"
             android:layout_below="@+id/youtube_fragment"

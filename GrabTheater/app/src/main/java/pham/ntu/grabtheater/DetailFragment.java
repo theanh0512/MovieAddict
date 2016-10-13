@@ -1,8 +1,10 @@
 package pham.ntu.grabtheater;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
@@ -69,6 +71,7 @@ public class DetailFragment extends Fragment {
             dataTaskToLoadTrailers.execute();
 
             likeButton = (com.like.LikeButton) rootView.findViewById(R.id.like_button);
+            if(getActivity().getClass()==MainActivity.class) likeButton.setVisibility(View.GONE);
             if(details.containsKey("Hide Like Button")) likeButton.setVisibility(View.GONE);
             setUpImageViews(rootView);
 
@@ -106,12 +109,14 @@ public class DetailFragment extends Fragment {
             likeButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    SharedPreferences.Editor editor = TabFavouritesFragment.likedMovies.edit();
+                    SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity().getApplicationContext());;
+                    SharedPreferences.Editor editor = sharedPreferences.edit();
                     moviesTitleList.add(mMovie.getTitle());
                     Gson gson = new Gson();
                     String json = gson.toJson(mMovie);
                     editor.putString(mMovie.getTitle(), json);
-                    editor.commit();
+                    editor.apply();
+                    editor.clear();
                     likeButton.setLiked(true);
                     likeButton.setEnabled(false);
                     isLiked = true;
