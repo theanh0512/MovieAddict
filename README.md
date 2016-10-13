@@ -6,3 +6,7 @@ Inside Config class:
 Youtube API: public static final String YOUTUBE_API_KEY = "YOUR_API_KEY";
 
 ThemovieDb API: public static final String THE_MOVIE_DB_API_KEY = "YOUR_API_KEY";
+
+
+![alt tag](https://github.com/theanh0512/TheaterApp/blob/master/main_activity.png)
+![alt tag](https://github.com/theanh0512/TheaterApp/blob/master/detail_activity.png)
