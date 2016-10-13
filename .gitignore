@@ -83,3 +83,4 @@ $RECYCLE.BIN/
 # Windows shortcuts
 *.lnk
 GrabTheater/.idea/gradle.xml
+GrabTheater/app/src/main/java/pham/ntu/grabtheater/Config.java
