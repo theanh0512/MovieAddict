@@ -1,13 +1,9 @@
 package pham.ntu.grabtheater;
 
 import android.content.Context;
-import android.content.Intent;
-import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,10 +11,13 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.GridView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 
 /**
@@ -34,15 +33,19 @@ public class TabNowShowingFragment extends Fragment {
 
     // TODO: Rename and change types of parameters
 
-    String movieTitle = null;
-    public static GridView gridview;
     public static ImageAdapter mMovieImageAdapter;
-    private OnFragmentInteractionListener mListener;
     public static List<Movie> moviesList = new ArrayList<Movie>();
-    int pageNum =1;
-    Button nextButton, previousButton;
-    public static int totalPages =0;
+    public static int totalPages = 0;
+    String movieTitle = null;
+    int pageNum = 1;
     ItemsListClickHandler handler;
+    @BindView(R.id.gridView)
+    GridView gridview;
+    @BindView(R.id.button_next)
+    Button nextButton;
+    @BindView(R.id.button_previous)
+    Button previousButton;
+    private OnFragmentInteractionListener mListener;
 
     public TabNowShowingFragment() {
         // Required empty public constructor
@@ -57,14 +60,14 @@ public class TabNowShowingFragment extends Fragment {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        if(savedInstanceState!=null){
+        if (savedInstanceState != null) {
             pageNum = savedInstanceState.getInt("page number");
         }
         super.onCreate(savedInstanceState);
     }
 
     private void updateMovieList() {
-        GetDataTask dataTaskForNowShowing = new GetDataTask(getActivity(),MainActivity.additionalUrl,true,pageNum);
+        GetDataTask dataTaskForNowShowing = new GetDataTask(MainActivity.additionalUrl, true, pageNum);
         dataTaskForNowShowing.execute();
     }
 
@@ -80,8 +83,9 @@ public class TabNowShowingFragment extends Fragment {
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_tab_now_showing, container, false);
         //while(TabNowShowingFragment.moviesList.size()==0){}
-        gridview = (GridView) rootView.findViewById(R.id.gridView);
-        mMovieImageAdapter = new ImageAdapter(getActivity(),TabNowShowingFragment.moviesList);
+        ButterKnife.bind(this, rootView);
+
+        mMovieImageAdapter = new ImageAdapter(getActivity(), TabNowShowingFragment.moviesList);
         gridview.setAdapter(mMovieImageAdapter);
         gridview.setDrawSelectorOnTop(false);
         gridview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -90,47 +94,42 @@ public class TabNowShowingFragment extends Fragment {
                 handler.onHandleItemClick(position);
             }
         });
-
-        nextButton = (Button) rootView.findViewById(R.id.button_next);
-        previousButton = (Button) rootView.findViewById(R.id.button_previous);
-        if(pageNum==1) previousButton.setEnabled(false);
+        if (pageNum == 1) previousButton.setEnabled(false);
         else previousButton.setEnabled(true);
-        nextButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(pageNum<totalPages) {
-                    previousButton.setEnabled(true);
-                    pageNum++;
-                    if(pageNum==totalPages) nextButton.setEnabled(false);
-                    GetDataTask dataTaskForNowShowing = new GetDataTask(getActivity(),MainActivity.additionalUrl,true,pageNum);
-                    dataTaskForNowShowing.execute();
-                    int i = 1000000;
-                    while(i>0){
-                        i--;
-                        gridview.invalidateViews();
-                    }
-                }
-            }
-        });
-        previousButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(pageNum>1){
-                    pageNum--;
-                    if(pageNum==1) previousButton.setEnabled(false);
-                    nextButton.setEnabled(true);
-                    GetDataTask dataTaskForNowShowing = new GetDataTask(getActivity(),MainActivity.additionalUrl,true,pageNum);
-                    dataTaskForNowShowing.execute();
-                    int i = 1000000;
-                    while(i>0){
-                        i--;
-                        gridview.invalidateViews();
-                    }
-                }
-            }
-        });
 
         return rootView;
+    }
+
+    @OnClick(R.id.button_next)
+    public void onClickNext() {
+        if (pageNum < totalPages) {
+            previousButton.setEnabled(true);
+            pageNum++;
+            if (pageNum == totalPages) nextButton.setEnabled(false);
+            GetDataTask dataTaskForNowShowing = new GetDataTask(MainActivity.additionalUrl, true, pageNum);
+            dataTaskForNowShowing.execute();
+            int i = 1000000;
+            while (i > 0) {
+                i--;
+                gridview.invalidateViews();
+            }
+        }
+    }
+
+    @OnClick(R.id.button_previous)
+    public void onClickPrevious() {
+        if (pageNum > 1) {
+            pageNum--;
+            if (pageNum == 1) previousButton.setEnabled(false);
+            nextButton.setEnabled(true);
+            GetDataTask dataTaskForNowShowing = new GetDataTask(MainActivity.additionalUrl, true, pageNum);
+            dataTaskForNowShowing.execute();
+            int i = 1000000;
+            while (i > 0) {
+                i--;
+                gridview.invalidateViews();
+            }
+        }
     }
 
     @Override
@@ -145,9 +144,8 @@ public class TabNowShowingFragment extends Fragment {
         try {
             handler = (ItemsListClickHandler) getActivity();
 
-        }
-        catch (ClassCastException e){
-            Log.e(TabNowShowingFragment.class.getSimpleName(),"The activity does not implement the interface");
+        } catch (ClassCastException e) {
+            Log.e(TabNowShowingFragment.class.getSimpleName(), "The activity does not implement the interface");
         }
     }
 
@@ -159,7 +157,7 @@ public class TabNowShowingFragment extends Fragment {
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        outState.putInt("page number",pageNum);
+        outState.putInt("page number", pageNum);
         super.onSaveInstanceState(outState);
     }
 
@@ -178,7 +176,7 @@ public class TabNowShowingFragment extends Fragment {
         void onFragmentInteraction(Uri uri);
     }
 
-    public interface ItemsListClickHandler{
+    public interface ItemsListClickHandler {
         public void onHandleItemClick(int position);
     }
 

@@ -29,4 +29,6 @@ dependencies {
     compile files('libs/YouTubeAndroidPlayerApi.jar')
     compile 'com.google.code.gson:gson:2.6.2'
     compile 'com.github.jd-alexander:LikeButton:0.1.8'
+    compile 'com.jakewharton:butterknife:8.4.0'
+    annotationProcessor 'com.jakewharton:butterknife-compiler:8.4.0'
 }

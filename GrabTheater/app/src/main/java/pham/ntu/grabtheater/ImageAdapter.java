@@ -18,7 +18,7 @@ import java.util.List;
 class ImageAdapter extends BaseAdapter {
     private Context mContext;
     private String imagePath;
-    List<Movie> moviesList;
+    private List<Movie> moviesList;
 
     public ImageAdapter(Context c, List<Movie> moviesList) {
         mContext = c;

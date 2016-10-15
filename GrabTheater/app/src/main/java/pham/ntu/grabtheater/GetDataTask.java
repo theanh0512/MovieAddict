@@ -1,9 +1,5 @@
 package pham.ntu.grabtheater;
 
-/**
- * Created by Administrator PC on 3/31/2016.
- */
-import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
 
@@ -16,33 +12,30 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
- * Created by user on 12/24/2015.
+ * Created by Pham on 12/24/2015.
  */
-public class GetDataTask extends AsyncTask<String, Void, List<String>> {
+class GetDataTask extends AsyncTask<String, Void, List<String>> {
     private final String LOG_TAG = GetDataTask.class.getSimpleName();
     //final String PREFIX_API_KEY = "?api_key=";
-    String result = "results";
-    String mUrlString = "http://api.themoviedb.org/3/movie/";
-    String page = "&page=";
-    boolean containPages = true;
-    private final Context mcontext;
-    String additionalUrl;
-    int pageNum;
+    private String result = "results";
+    private String mUrlString = "http://api.themoviedb.org/3/movie/";
+    private String page = "&page=";
+    private boolean containPages = true;
+    private String additionalUrl;
+    private int pageNum;
 
-    public GetDataTask(Context context, String additionalUrl, boolean containPages) {
-        mcontext = context;
+    GetDataTask(String additionalUrl, boolean containPages) {
         this.additionalUrl = additionalUrl;
         this.containPages = containPages;
     }
 
-    public GetDataTask(Context context, String additionalUrl, boolean containPages,int pageNum) {
-        mcontext = context;
+    GetDataTask(String additionalUrl, boolean containPages, int pageNum) {
         this.additionalUrl = additionalUrl;
         this.containPages = containPages;
         this.pageNum = pageNum;
@@ -51,13 +44,13 @@ public class GetDataTask extends AsyncTask<String, Void, List<String>> {
 
     @Override
     protected List<String> doInBackground(String... strings) {
-        mUrlString = mUrlString+additionalUrl + Config.PREFIX_API_KEY + Config.THE_MOVIE_DB_API_KEY;
-        if(containPages) {
+        mUrlString = mUrlString + additionalUrl + Config.PREFIX_API_KEY + Config.THE_MOVIE_DB_API_KEY;
+        if (containPages) {
             page += pageNum;
             mUrlString += page;
         }
-        List<String> jsonData = new ArrayList<String>();
-        URL url = null;
+        List<String> jsonData = new ArrayList<>();
+        URL url;
         try {
             url = new URL(mUrlString);
             HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
@@ -65,7 +58,7 @@ public class GetDataTask extends AsyncTask<String, Void, List<String>> {
             BufferedReader reader = new BufferedReader(new InputStreamReader(is));
             StringBuilder sb = new StringBuilder();
 
-            String line = null;
+            String line;
             try {
                 while ((line = reader.readLine()) != null) {
                     sb.append(line + "\n");
@@ -84,9 +77,7 @@ public class GetDataTask extends AsyncTask<String, Void, List<String>> {
 
             //parse json data
             parseJsonData(jsonData);
-            Log.i(LOG_TAG,"URL Queried: " + mUrlString);
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
+            Log.i(LOG_TAG, "URL Queried: " + mUrlString);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -98,21 +89,21 @@ public class GetDataTask extends AsyncTask<String, Void, List<String>> {
     private void parseJsonData(List<String> jsonArray) {
         try {
             JSONObject jo = new JSONObject(result);
-            if(containPages&&additionalUrl==MainActivity.additionalUrl){
+            if (containPages && Objects.equals(additionalUrl, MainActivity.additionalUrl)) {
                 TabNowShowingFragment.totalPages = jo.getInt("total_pages");
             }
             JSONArray jArray = jo.getJSONArray("results");
             jsonArray.clear();
 
-            if(additionalUrl==MainActivity.additionalUrl) TabNowShowingFragment.moviesList.clear();
-            if(additionalUrl.contains("similar")) DetailFragment.moviesList.clear();
+            if (Objects.equals(additionalUrl, MainActivity.additionalUrl))
+                TabNowShowingFragment.moviesList.clear();
+            if (additionalUrl.contains("similar")) DetailFragment.moviesList.clear();
 
             int len = jArray.length();
-            if(jArray.length()==1) len=2;
-            for (int i = 0; i < len-1; i++) {
-                String s = "";
+            if (jArray.length() == 1) len = 2;
+            for (int i = 0; i < len; i++) {
                 JSONObject json = jArray.getJSONObject(i);
-                if (additionalUrl == MainActivity.additionalUrl||additionalUrl==
+                if (Objects.equals(additionalUrl, MainActivity.additionalUrl) || additionalUrl ==
                         DetailFragment.additionalUrl) {
                     String poster_path = json.getString("poster_path");
                     boolean adult = json.getBoolean("adult");
@@ -120,10 +111,10 @@ public class GetDataTask extends AsyncTask<String, Void, List<String>> {
                     String release_date = json.getString("release_date");
                     JSONArray genre = json.getJSONArray("genre_ids");
                     int[] genre_ids = null;
-                    if(genre.length()!=0) {
+                    if (genre.length() != 0) {
                         genre_ids = new int[genre.length()];
-                        for (int j = 0; i < genre.length(); i++) {
-                            genre_ids[i] = genre.getInt(i);
+                        for (int j = 0; j < genre.length(); j++) {
+                            genre_ids[j] = genre.getInt(j);
                         }
                     }
                     int id = json.getInt("id");
@@ -136,28 +127,29 @@ public class GetDataTask extends AsyncTask<String, Void, List<String>> {
                     boolean video = json.getBoolean("video");
                     double vote_average = json.getDouble("vote_average");
                     //jsonArray.add(s);
-                    if(additionalUrl==MainActivity.additionalUrl) {
+                    if (Objects.equals(additionalUrl, MainActivity.additionalUrl)) {
                         TabNowShowingFragment.moviesList.add(new Movie(adult, backdrop_path, genre_ids, id, original_language, original_title,
                                 overview, release_date, poster_path, popularity, title, video, vote_average, vote_count));
-                    }
-                    else{
+                    } else {
                         DetailFragment.moviesList.add(new Movie(adult, backdrop_path, genre_ids, id, original_language, original_title,
                                 overview, release_date, poster_path, popularity, title, video, vote_average, vote_count));
                     }
-                }
-                else{
+                } else {
                     String id = json.getString("id");
                     String iso_639_1 = json.getString("iso_639_1");
                     String key = json.getString("key");
                     String name = json.getString("name");
-                    String site =  json.getString("site");
+                    String site = json.getString("site");
                     int size = json.getInt("size");
                     String type = json.getString("type");
-                    DetailFragment.trailersList.add(new Video(id,iso_639_1,key,name,site,size,type));
+                    DetailFragment.trailersList.add(new Video(id, iso_639_1, key, name, site, size, type));
                 }
             }
 
-            if(additionalUrl==MainActivity.additionalUrl) TabNowShowingFragment.mMovieImageAdapter.notifyDataSetChanged();
+            if (Objects.equals(additionalUrl, MainActivity.additionalUrl))
+                TabNowShowingFragment.mMovieImageAdapter.notifyDataSetChanged();
+            if (Objects.equals(additionalUrl, DetailFragment.additionalUrl))
+                DetailFragment.mMovieImageAdapter.notifyDataSetChanged();
 
         } catch (Exception e) {
             // TODO: handle exception
@@ -167,9 +159,9 @@ public class GetDataTask extends AsyncTask<String, Void, List<String>> {
 
     @Override
     protected void onPostExecute(List<String> strings) {
-        if(additionalUrl==MainActivity.additionalUrl)
-        {
+        if (Objects.equals(additionalUrl, MainActivity.additionalUrl))
             TabNowShowingFragment.mMovieImageAdapter.notifyDataSetChanged();
-        }
+        if (Objects.equals(additionalUrl, DetailFragment.additionalUrl))
+            DetailFragment.mMovieImageAdapter.notifyDataSetChanged();
     }
 }

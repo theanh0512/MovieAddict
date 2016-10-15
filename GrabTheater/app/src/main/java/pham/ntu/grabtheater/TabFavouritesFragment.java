@@ -10,20 +10,24 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.GridView;
 
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnItemClick;
 
 public class TabFavouritesFragment extends Fragment {
-    public static final String MyPREFERENCES = "MyPrefs" ;
     public static SharedPreferences likedMovies;
-    public static List<Movie> moviesFavouriteList = new ArrayList<Movie>();
-    public static GridView favourite_gridview;
+    public static List<Movie> moviesFavouriteList = new ArrayList<>();
     public static ImageAdapter mMovieImageAdapter;
+    @BindView(R.id.gridView_favourite)
+    GridView favourite_gridview;
 
     private OnFragmentInteractionListener mListener;
 
@@ -37,10 +41,14 @@ public class TabFavouritesFragment extends Fragment {
         likedMovies = PreferenceManager.getDefaultSharedPreferences(getActivity().getApplicationContext());
         Gson gson = new Gson();
         moviesFavouriteList.clear();
-        for(int i=0;i< DetailFragment.moviesTitleList.size();i++){
-            String json = likedMovies.getString(DetailFragment.moviesTitleList.get(i), "");
-            Movie movie = gson.fromJson(json, Movie.class);
-            moviesFavouriteList.add(movie);
+        Set<String> titleSet = likedMovies.getStringSet("titleSet", null);
+        if (titleSet != null) {
+            String[] titleArray = titleSet.toArray(new String[titleSet.size()]);
+            for (int i = 0; i < titleArray.length; i++) {
+                String json = likedMovies.getString(titleArray[i], "");
+                Movie movie = gson.fromJson(json, Movie.class);
+                moviesFavouriteList.add(movie);
+            }
         }
         super.onCreate(savedInstanceState);
     }
@@ -51,22 +59,21 @@ public class TabFavouritesFragment extends Fragment {
         // Inflate the layout for this fragment
 
         View rootView = inflater.inflate(R.layout.fragment_tab_favourites, container, false);
-        favourite_gridview = (GridView) rootView.findViewById(R.id.gridView_favourite);
-        mMovieImageAdapter = new ImageAdapter(getActivity(),moviesFavouriteList);
+        ButterKnife.bind(this, rootView);
+        mMovieImageAdapter = new ImageAdapter(getActivity(), moviesFavouriteList);
         favourite_gridview.setAdapter(mMovieImageAdapter);
         favourite_gridview.setDrawSelectorOnTop(false);
-        favourite_gridview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            public void onItemClick(AdapterView<?> parent, View v,
-                                    int position, long id) {
-                Movie movie = moviesFavouriteList.get(position);
-                Bundle bundle = new Bundle();
-                bundle.putSerializable("Movie",movie);
-                bundle.putBoolean("Hide Like Button",true);
-                Intent intent = new Intent(getActivity(), DetailActivity.class).putExtra("Bundle",bundle);
-                startActivity(intent);
-            }
-        });
         return rootView;
+    }
+
+    @OnItemClick(R.id.gridView_favourite)
+    public void itemClick(int position) {
+        Movie movie = moviesFavouriteList.get(position);
+        Bundle bundle = new Bundle();
+        bundle.putParcelable("Movie", movie);
+        bundle.putBoolean("Hide Like Button", true);
+        Intent intent = new Intent(getActivity(), DetailActivity.class).putExtra("Bundle", bundle);
+        startActivity(intent);
     }
 
     @Override
@@ -85,6 +92,7 @@ public class TabFavouritesFragment extends Fragment {
         super.onDetach();
         mListener = null;
     }
+
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);

@@ -6,38 +6,38 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.preference.PreferenceManager;
-import android.support.v4.app.FragmentTransaction;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.design.widget.TabLayout;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
 public class MainActivity extends AppCompatActivity implements TabNowShowingFragment.OnFragmentInteractionListener, TabFavouritesFragment.OnFragmentInteractionListener, TabNowShowingFragment.ItemsListClickHandler {
 
     public static String additionalUrl = "now_playing";
     boolean dualPane;
     View detailFrame;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if(isOnline()) {
+        if (isOnline()) {
             setContentView(R.layout.activity_main);
 
             detailFrame = findViewById(R.id.detail_frame);
-            dualPane = (detailFrame !=null && detailFrame.getVisibility()==View.VISIBLE);
+            dualPane = (detailFrame != null && detailFrame.getVisibility() == View.VISIBLE);
 
             SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
-            String additionalUrl = preferences.getString(getString(R.string.pref_sort_types_key), getString(R.string.pref_sort_types_nowplaying));
-            MainActivity.additionalUrl = additionalUrl;
-            if(!dualPane) {
+            MainActivity.additionalUrl = preferences.getString(getString(R.string.pref_sort_types_key), getString(R.string.pref_sort_types_nowplaying));
+            if (!dualPane) {
                 Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
                 setSupportActionBar(toolbar);
                 TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
@@ -73,14 +73,13 @@ public class MainActivity extends AppCompatActivity implements TabNowShowingFrag
                     }
                 });
             }
-        }
-        else{
+        } else {
             try {
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
                 builder.setTitle(getString(R.string.alert_title))
                         .setMessage(getString(R.string.alert_message))
                         .setCancelable(false)
-                        .setNegativeButton(getString(R.string.alert_button),new DialogInterface.OnClickListener() {
+                        .setNegativeButton(getString(R.string.alert_button), new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
                                 dialog.cancel();
                                 finish();
@@ -88,10 +87,8 @@ public class MainActivity extends AppCompatActivity implements TabNowShowingFrag
                         });
                 AlertDialog alert = builder.create();
                 alert.show();
-            }
-            catch(Exception e)
-            {
-                Log.d(MainActivity.class.getSimpleName(), "Show Dialog: "+e.getMessage());
+            } catch (Exception e) {
+                Log.d(MainActivity.class.getSimpleName(), "Show Dialog: " + e.getMessage());
             }
         }
     }
@@ -141,17 +138,16 @@ public class MainActivity extends AppCompatActivity implements TabNowShowingFrag
     public void onHandleItemClick(int position) {
         Movie movie = TabNowShowingFragment.moviesList.get(position);
         Bundle bundle = new Bundle();
-        bundle.putSerializable("Movie",movie);
-        if(dualPane) {
+        bundle.putParcelable("Movie", movie);
+        if (dualPane) {
             DetailFragment detailFragment = new DetailFragment();
             detailFragment.setArguments(bundle);
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
             transaction.replace(R.id.detail_frame, detailFragment);
             transaction.addToBackStack(null);
             transaction.commit();
-        }
-        else{
-            Intent intent = new Intent(this, DetailActivity.class).putExtra("Bundle",bundle);
+        } else {
+            Intent intent = new Intent(this, DetailActivity.class).putExtra("Bundle", bundle);
             startActivity(intent);
         }
     }
