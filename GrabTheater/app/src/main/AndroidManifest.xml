@@ -39,6 +39,9 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="pham.ntu.grabtheater.MainActivity" />
         </activity>
+        <provider
+            android:authorities="pham.ntu.grabtheater"
+            android:name=".data.MovieProvider" />
     </application>
 
 </manifest>
