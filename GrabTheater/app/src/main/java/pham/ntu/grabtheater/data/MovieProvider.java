@@ -17,11 +17,17 @@ public class MovieProvider extends ContentProvider {
     static final int MOVIE = 100;
     static final int VIDEO_IN_MOVIE = 101;
     static final int VIDEO = 300;
+    static final int NOW_PLAYING_WITH_PAGE_NUMBER = 401;
+    static final int NOW_PLAYING = 400;
     private static final UriMatcher sUriMatcher = buildUriMatcher();
     private static final SQLiteQueryBuilder sVideoInMovieQueryBuilder;
+    private static final SQLiteQueryBuilder sNowPlayingQueryBuilder;
     private static final String sMovieIDSelection =
             MovieContract.VideoEntry.TABLE_NAME +
                     "." + MovieContract.VideoEntry.COLUMN_MOVIE_KEY + " = ? ";
+    private static final String sNowPlayingSelection =
+            MovieContract.NơwPlayingEntry.TABLE_NAME +
+                    "." + MovieContract.NơwPlayingEntry.COLUMN_PAGE_NUMBER + " = ? ";
 
     static {
         sVideoInMovieQueryBuilder = new SQLiteQueryBuilder();
@@ -33,6 +39,18 @@ public class MovieProvider extends ContentProvider {
                         "." + MovieContract.VideoEntry.COLUMN_MOVIE_KEY +
                         " = " + MovieContract.MovieEntry.TABLE_NAME +
                         "." + MovieContract.MovieEntry._ID);
+    }
+
+    static {
+        sNowPlayingQueryBuilder = new SQLiteQueryBuilder();
+
+        sNowPlayingQueryBuilder.setTables(
+                MovieContract.MovieEntry.TABLE_NAME + " INNER JOIN " +
+                        MovieContract.NơwPlayingEntry.TABLE_NAME +
+                        " ON " + MovieContract.NơwPlayingEntry.TABLE_NAME +
+                        "." + MovieContract.NơwPlayingEntry.COLUMN_MOVIE_KEY +
+                        " = " + MovieContract.MovieEntry.TABLE_NAME +
+                        "." + MovieContract.MovieEntry.COLUMN_MOVIE_ID);
     }
 
     private DatabaseHelper mHelper;
@@ -48,6 +66,9 @@ public class MovieProvider extends ContentProvider {
         matcher.addURI(authority, MovieContract.PATH_MOVIE, MOVIE);
         matcher.addURI(authority, MovieContract.PATH_VIDEO + "/*", VIDEO_IN_MOVIE);
         matcher.addURI(authority, MovieContract.PATH_VIDEO, VIDEO);
+        //nowplaying/1/ -> page 1 items
+        matcher.addURI(authority, MovieContract.PATH_NOWPLAYING + "/#", NOW_PLAYING_WITH_PAGE_NUMBER);
+        matcher.addURI(authority, MovieContract.PATH_NOWPLAYING, NOW_PLAYING);
         return matcher;
     }
 
@@ -94,6 +115,17 @@ public class MovieProvider extends ContentProvider {
                 break;
             }
 
+            // "nowplaying/*"
+            case NOW_PLAYING_WITH_PAGE_NUMBER: {
+                retCursor = getNowPlayingItemsInPage(uri, projection, sortOrder);
+                break;
+            }
+            // "nowplaying/page_number=1"
+            case NOW_PLAYING: {
+                retCursor = getNowPlayingItemsInPage(uri, projection, sortOrder);
+                break;
+            }
+
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
@@ -117,6 +149,22 @@ public class MovieProvider extends ContentProvider {
         );
     }
 
+    private Cursor getNowPlayingItemsInPage(Uri uri, String[] projection, String sortOrder) {
+        int pageNumber = MovieContract.NơwPlayingEntry.getPageNumberFromUri(uri);
+
+        String[] selectionArgs = new String[]{Integer.toString(pageNumber)};
+        String selection = sNowPlayingSelection;
+
+        return sNowPlayingQueryBuilder.query(mHelper.getReadableDatabase(),
+                projection,
+                selection,
+                selectionArgs,
+                null,
+                null,
+                sortOrder
+        );
+    }
+
     @Nullable
     @Override
     public String getType(Uri uri) {
@@ -130,6 +178,8 @@ public class MovieProvider extends ContentProvider {
                 return MovieContract.VideoEntry.CONTENT_ITEM_TYPE;
             case VIDEO:
                 return MovieContract.VideoEntry.CONTENT_TYPE;
+            case NOW_PLAYING_WITH_PAGE_NUMBER:
+                return MovieContract.NơwPlayingEntry.CONTENT_TYPE;
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
@@ -159,6 +209,14 @@ public class MovieProvider extends ContentProvider {
                     throw new android.database.SQLException("Failed to insert row into " + uri);
                 break;
             }
+            case NOW_PLAYING: {
+                long _id = db.insert(MovieContract.NơwPlayingEntry.TABLE_NAME, null, values);
+                if (_id > 0)
+                    returnUri = MovieContract.NơwPlayingEntry.buildNowPlayingUri(_id);
+                else
+                    throw new android.database.SQLException("Failed to insert row into " + uri);
+                break;
+            }
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
@@ -177,7 +235,7 @@ public class MovieProvider extends ContentProvider {
                 int returnCount = 0;
                 try {
                     for (ContentValues value : values) {
-                        long _id = db.insert(MovieContract.MovieEntry.TABLE_NAME, null, value);
+                        long _id = db.insertWithOnConflict(MovieContract.MovieEntry.TABLE_NAME, null, value,SQLiteDatabase.CONFLICT_IGNORE);
                         if (_id != -1) {
                             returnCount++;
                         }
@@ -188,6 +246,22 @@ public class MovieProvider extends ContentProvider {
                 }
                 getContext().getContentResolver().notifyChange(uri, null);
                 return returnCount;
+            case NOW_PLAYING:
+                db.beginTransaction();
+                int returnCount2 = 0;
+                try {
+                    for (ContentValues value : values) {
+                        long _id = db.insertWithOnConflict(MovieContract.NơwPlayingEntry.TABLE_NAME, null, value, SQLiteDatabase.CONFLICT_REPLACE);
+                        if (_id != -1) {
+                            returnCount2++;
+                        }
+                    }
+                    db.setTransactionSuccessful();
+                } finally {
+                    db.endTransaction();
+                }
+                getContext().getContentResolver().notifyChange(uri, null);
+                return returnCount2;
             default:
                 return super.bulkInsert(uri, values);
         }
@@ -208,6 +282,10 @@ public class MovieProvider extends ContentProvider {
             case VIDEO:
                 rowsDeleted = db.delete(
                         MovieContract.VideoEntry.TABLE_NAME, selection, selectionArgs);
+                break;
+            case NOW_PLAYING:
+                rowsDeleted = db.delete(
+                        MovieContract.NơwPlayingEntry.TABLE_NAME, selection, selectionArgs);
                 break;
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
@@ -232,6 +310,10 @@ public class MovieProvider extends ContentProvider {
                 break;
             case VIDEO:
                 rowsUpdated = db.update(MovieContract.VideoEntry.TABLE_NAME, values, selection,
+                        selectionArgs);
+                break;
+            case NOW_PLAYING:
+                rowsUpdated = db.update(MovieContract.NơwPlayingEntry.TABLE_NAME, values, selection,
                         selectionArgs);
                 break;
             default:

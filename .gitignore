@@ -84,3 +84,4 @@ $RECYCLE.BIN/
 *.lnk
 GrabTheater/.idea/gradle.xml
 GrabTheater/app/src/main/java/pham/ntu/grabtheater/Config.java
+.idea/workspace.xml

@@ -1,5 +1,10 @@
 package pham.ntu.grabtheater;
 
+import android.content.ContentValues;
+import android.content.Context;
+import android.database.Cursor;
+import android.database.DatabaseUtils;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.util.Log;
 
@@ -16,12 +21,17 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Vector;
+import pham.ntu.grabtheater.data.MovieContract.MovieEntry;
+import pham.ntu.grabtheater.data.MovieContract.NơwPlayingEntry;
+import pham.ntu.grabtheater.data.MovieContract.VideoEntry;
 
 /**
  * Created by Pham on 12/24/2015.
  */
 class GetDataTask extends AsyncTask<String, Void, List<String>> {
     private final String LOG_TAG = GetDataTask.class.getSimpleName();
+    private final Context mContext;
     //final String PREFIX_API_KEY = "?api_key=";
     private String result = "results";
     private String mUrlString = "http://api.themoviedb.org/3/movie/";
@@ -30,17 +40,42 @@ class GetDataTask extends AsyncTask<String, Void, List<String>> {
     private String additionalUrl;
     private int pageNum;
 
-    GetDataTask(String additionalUrl, boolean containPages) {
+    GetDataTask(Context context, String additionalUrl, boolean containPages) {
+        mContext = context;
         this.additionalUrl = additionalUrl;
         this.containPages = containPages;
     }
 
-    GetDataTask(String additionalUrl, boolean containPages, int pageNum) {
+    GetDataTask(Context context, String additionalUrl, boolean containPages, int pageNum) {
+        mContext = context;
         this.additionalUrl = additionalUrl;
         this.containPages = containPages;
         this.pageNum = pageNum;
     }
 
+    public static String convertArrayToString(int[] array) {
+        String strSeparator = "__,__";
+        String str = "";
+        if (array != null) {
+            for (int i = 0; i < array.length; i++) {
+                str = str + array[i];
+                if (i < array.length - 1) {
+                    str = str + strSeparator;
+                }
+            }
+        }
+        return str;
+    }
+
+    public static int[] convertStringToArray(String str) {
+        String strSeparator = "__,__";
+        String[] arr = str.split(strSeparator);
+        int[] arrInt = new int[arr.length];
+        for (int i = 0; i < arr.length; i++) {
+            arrInt[i] = Integer.parseInt(arr[i]);
+        }
+        return arrInt;
+    }
 
     @Override
     protected List<String> doInBackground(String... strings) {
@@ -100,6 +135,8 @@ class GetDataTask extends AsyncTask<String, Void, List<String>> {
             if (additionalUrl.contains("similar")) DetailFragment.moviesList.clear();
 
             int len = jArray.length();
+            Vector<ContentValues> cVVector = new Vector<>(len);
+            Vector<ContentValues> cVVectorNowPlaying = new Vector<>(len);
             if (jArray.length() == 1) len = 2;
             for (int i = 0; i < len; i++) {
                 JSONObject json = jArray.getJSONObject(i);
@@ -117,6 +154,7 @@ class GetDataTask extends AsyncTask<String, Void, List<String>> {
                             genre_ids[j] = genre.getInt(j);
                         }
                     }
+                    String stringGenreIds = convertArrayToString(genre_ids);
                     int id = json.getInt("id");
                     String original_title = json.getString("original_title");
                     String original_language = json.getString("original_language");
@@ -126,6 +164,31 @@ class GetDataTask extends AsyncTask<String, Void, List<String>> {
                     int vote_count = json.getInt("vote_count");
                     boolean video = json.getBoolean("video");
                     double vote_average = json.getDouble("vote_average");
+
+                    ContentValues movieValues = new ContentValues();
+                    movieValues.put(MovieEntry.COLUMN_MOVIE_ID, id);
+                    movieValues.put(MovieEntry.COLUMN_POSTER_PATH, poster_path);
+                    movieValues.put(MovieEntry.COLUMN_IS_ADULT, adult);
+                    movieValues.put(MovieEntry.COLUMN_OVERVIEW, overview);
+                    movieValues.put(MovieEntry.COLUMN_RELEASE_DATE, release_date);
+                    movieValues.put(MovieEntry.COLUMN_GENRE_IDS, stringGenreIds);
+                    movieValues.put(MovieEntry.COLUMN_ORIGINAL_TITLE, original_title);
+                    movieValues.put(MovieEntry.COLUMN_ORIGINAL_LANGUAGE, original_language);
+                    movieValues.put(MovieEntry.COLUMN_TITLE, title);
+                    movieValues.put(MovieEntry.COLUMN_BACKDROP_PATH, backdrop_path);
+                    movieValues.put(MovieEntry.COLUMN_POPULARITY, popularity);
+                    movieValues.put(MovieEntry.COLUMN_VOTE_COUNT, vote_count);
+                    movieValues.put(MovieEntry.COLUMN_HAS_VIDEO, video);
+                    movieValues.put(MovieEntry.COLUMN_VOTE_AVERAGE, vote_average);
+
+                    ContentValues nowPlayingValues = new ContentValues();
+                    nowPlayingValues.put(NơwPlayingEntry.COLUMN_MOVIE_KEY, id);
+                    nowPlayingValues.put(NơwPlayingEntry.COLUMN_POSITION, i);
+                    nowPlayingValues.put(NơwPlayingEntry.COLUMN_PAGE_NUMBER, pageNum);
+
+                    cVVector.add(movieValues);
+                    cVVectorNowPlaying.add(nowPlayingValues);
+
                     //jsonArray.add(s);
                     if (Objects.equals(additionalUrl, MainActivity.additionalUrl)) {
                         TabNowShowingFragment.moviesList.add(new Movie(adult, backdrop_path, genre_ids, id, original_language, original_title,
@@ -145,6 +208,29 @@ class GetDataTask extends AsyncTask<String, Void, List<String>> {
                     DetailFragment.trailersList.add(new Video(id, iso_639_1, key, name, site, size, type));
                 }
             }
+
+            //testing
+            if (cVVector.size() > 0) {
+                ContentValues[] cvArray = new ContentValues[cVVector.size()];
+                cVVector.toArray(cvArray);
+                mContext.getContentResolver().bulkInsert(MovieEntry.CONTENT_URI, cvArray);
+            }
+
+            // Students: Uncomment the next lines to display what what you stored in the bulkInsert
+            Uri nowPlayingAtPageUri = NơwPlayingEntry.buildNowPlayingPage(pageNum);
+            Cursor cur = mContext.getContentResolver().query(nowPlayingAtPageUri,
+                    null, null, null, null);
+
+            cVVector = new Vector<>(cur.getCount());
+            if (cur.moveToFirst()) {
+                do {
+                    ContentValues cv = new ContentValues();
+                    DatabaseUtils.cursorRowToContentValues(cur, cv);
+                    cVVector.add(cv);
+                } while (cur.moveToNext());
+            }
+
+            Log.d(LOG_TAG, "GetDataTask Complete. " + cVVector.size() + " Inserted");
 
             if (Objects.equals(additionalUrl, MainActivity.additionalUrl))
                 TabNowShowingFragment.mMovieImageAdapter.notifyDataSetChanged();

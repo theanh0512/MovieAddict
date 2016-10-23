@@ -5,6 +5,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import pham.ntu.grabtheater.data.MovieContract.MovieEntry;
+import pham.ntu.grabtheater.data.MovieContract.NơwPlayingEntry;
 import pham.ntu.grabtheater.data.MovieContract.VideoEntry;
 
 /**
@@ -12,7 +13,7 @@ import pham.ntu.grabtheater.data.MovieContract.VideoEntry;
  */
 
 public class DatabaseHelper extends SQLiteOpenHelper {
-    static final String DATABASE_NAME = "movie.db";
+    public static final String DATABASE_NAME = "movie.db";
     private static final int DATABASE_VERSION = 1;
 
     public DatabaseHelper(Context context) {
@@ -26,16 +27,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 MovieEntry.COLUMN_MOVIE_ID + " INTEGER UNIQUE NOT NULL, " +
                 MovieEntry.COLUMN_IS_ADULT + " INTEGER, " +
                 MovieEntry.COLUMN_BACKDROP_PATH + " TEXT NOT NULL, " +
-                MovieEntry.COLUMN_GENRE_IDS + " TEXT " +
-                MovieEntry.COLUMN_ORIGINAL_LANGUAGE + " TEXT " +
-                MovieEntry.COLUMN_ORIGINAL_TITLE + " TEXT " +
-                MovieEntry.COLUMN_OVERVIEW + " TEXT " +
-                MovieEntry.COLUMN_RELEASE_DATE + " TEXT " +
-                MovieEntry.COLUMN_POSTER_PATH + " TEXT " +
-                MovieEntry.COLUMN_POPULARITY + " REAL " +
-                MovieEntry.COLUMN_TITLE + " TEXT " +
-                MovieEntry.COLUMN_HAS_VIDEO + " INTEGER " +
-                MovieEntry.COLUMN_VOTE_AVERAGE + " REAL " +
+                MovieEntry.COLUMN_GENRE_IDS + " TEXT, " +
+                MovieEntry.COLUMN_ORIGINAL_LANGUAGE + " TEXT, " +
+                MovieEntry.COLUMN_ORIGINAL_TITLE + " TEXT, " +
+                MovieEntry.COLUMN_OVERVIEW + " TEXT, " +
+                MovieEntry.COLUMN_RELEASE_DATE + " TEXT, " +
+                MovieEntry.COLUMN_POSTER_PATH + " TEXT, " +
+                MovieEntry.COLUMN_POPULARITY + " REAL, " +
+                MovieEntry.COLUMN_TITLE + " TEXT, " +
+                MovieEntry.COLUMN_HAS_VIDEO + " INTEGER, " +
+                MovieEntry.COLUMN_VOTE_AVERAGE + " REAL, " +
                 MovieEntry.COLUMN_VOTE_COUNT + " INTEGER " +
                 " );";
 
@@ -53,10 +54,25 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
                 // Set up the location column as a foreign key to location table.
                 " FOREIGN KEY (" + VideoEntry.COLUMN_MOVIE_KEY + ") REFERENCES " +
-                MovieEntry.TABLE_NAME + " (" + MovieEntry._ID + ");";
+                MovieEntry.TABLE_NAME + " (" + MovieEntry._ID + "));";
+
+        final String SQL_CREATE_NOW_PLAYING_TABLE = "CREATE TABLE " + NơwPlayingEntry.TABLE_NAME + " (" +
+                NơwPlayingEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
+                //id associated with movie
+                NơwPlayingEntry.COLUMN_MOVIE_KEY + " INTEGER NOT NULL, " +
+                NơwPlayingEntry.COLUMN_PAGE_NUMBER + " INTEGER NOT NULL, " +
+                NơwPlayingEntry.COLUMN_POSITION + " INTEGER NOT NULL, " +
+
+//                // Set up the location column as a foreign key to location table.
+//                " FOREIGN KEY (" + VideoEntry.COLUMN_MOVIE_KEY + ") REFERENCES " +
+//                MovieEntry.TABLE_NAME + " (" + MovieEntry._ID + "), " +
+                " UNIQUE (" + NơwPlayingEntry.COLUMN_MOVIE_KEY + ", " +
+                NơwPlayingEntry.COLUMN_POSITION + ") ON CONFLICT REPLACE);";
+        ;
 
         sqLiteDatabase.execSQL(SQL_CREATE_MOVIE_TABLE);
         sqLiteDatabase.execSQL(SQL_CREATE_VIDEO_TABLE);
+        sqLiteDatabase.execSQL(SQL_CREATE_NOW_PLAYING_TABLE);
     }
 
     @Override
@@ -69,6 +85,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         // should be your top priority before modifying this method.
         sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + MovieEntry.TABLE_NAME);
         sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + VideoEntry.TABLE_NAME);
+        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + NơwPlayingEntry.TABLE_NAME);
         onCreate(sqLiteDatabase);
     }
 }

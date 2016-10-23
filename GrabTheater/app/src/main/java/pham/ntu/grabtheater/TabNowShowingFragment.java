@@ -67,7 +67,7 @@ public class TabNowShowingFragment extends Fragment {
     }
 
     private void updateMovieList() {
-        GetDataTask dataTaskForNowShowing = new GetDataTask(MainActivity.additionalUrl, true, pageNum);
+        GetDataTask dataTaskForNowShowing = new GetDataTask(this.getContext(), MainActivity.additionalUrl, true, pageNum);
         dataTaskForNowShowing.execute();
     }
 
@@ -106,7 +106,7 @@ public class TabNowShowingFragment extends Fragment {
             previousButton.setEnabled(true);
             pageNum++;
             if (pageNum == totalPages) nextButton.setEnabled(false);
-            GetDataTask dataTaskForNowShowing = new GetDataTask(MainActivity.additionalUrl, true, pageNum);
+            GetDataTask dataTaskForNowShowing = new GetDataTask(this.getContext(), MainActivity.additionalUrl, true, pageNum);
             dataTaskForNowShowing.execute();
             int i = 1000000;
             while (i > 0) {
@@ -122,7 +122,7 @@ public class TabNowShowingFragment extends Fragment {
             pageNum--;
             if (pageNum == 1) previousButton.setEnabled(false);
             nextButton.setEnabled(true);
-            GetDataTask dataTaskForNowShowing = new GetDataTask(MainActivity.additionalUrl, true, pageNum);
+            GetDataTask dataTaskForNowShowing = new GetDataTask(this.getContext(), MainActivity.additionalUrl, true, pageNum);
             dataTaskForNowShowing.execute();
             int i = 1000000;
             while (i > 0) {

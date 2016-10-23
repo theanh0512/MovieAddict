@@ -85,7 +85,7 @@ public class DetailFragment extends Fragment {
 
             trailersList.clear();
             String additionalUrlToGetTrailers = mMovie.getId() + "/videos";
-            GetDataTask dataTaskToLoadTrailers = new GetDataTask(additionalUrlToGetTrailers, false);
+            GetDataTask dataTaskToLoadTrailers = new GetDataTask(this.getContext(), additionalUrlToGetTrailers, false);
             dataTaskToLoadTrailers.execute();
             if (getActivity().getClass() == MainActivity.class) likeButton.setVisibility(View.GONE);
             if (details.containsKey("Hide Like Button")) likeButton.setVisibility(View.GONE);
@@ -94,7 +94,7 @@ public class DetailFragment extends Fragment {
             updateViews();
 
             additionalUrl = mMovie.getId() + "/similar";
-            GetDataTask dataTaskForDetailActivity = new GetDataTask(additionalUrl, true, 1);
+            GetDataTask dataTaskForDetailActivity = new GetDataTask(this.getContext(),additionalUrl, true, 1);
             dataTaskForDetailActivity.execute();
 
             gridview.setExpanded(true);

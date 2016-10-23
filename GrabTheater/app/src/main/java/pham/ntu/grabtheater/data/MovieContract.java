@@ -22,6 +22,7 @@ public class MovieContract {
     public static final Uri BASE_CONTENT_URI = Uri.parse("content://" + CONTENT_AUTHORITY);
     public static final String PATH_MOVIE = "movie";
     public static final String PATH_VIDEO = "video";
+    public static final String PATH_NOWPLAYING = "nowplaying";
 
     /*
         Inner class that defines the contents of the Movie table
@@ -58,7 +59,6 @@ public class MovieContract {
         }
     }
 
-    /* Inner class that defines the contents of the weather table */
     public static final class VideoEntry implements BaseColumns {
 
         public static final Uri CONTENT_URI =
@@ -89,4 +89,40 @@ public class MovieContract {
             return Integer.parseInt(uri.getPathSegments().get(1));
         }
     }
+
+    public static final class NơwPlayingEntry implements BaseColumns {
+
+        public static final Uri CONTENT_URI =
+                BASE_CONTENT_URI.buildUpon().appendPath(PATH_NOWPLAYING).build();
+
+        public static final String CONTENT_TYPE =
+                ContentResolver.CURSOR_DIR_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_NOWPLAYING;
+        public static final String CONTENT_ITEM_TYPE =
+                ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_NOWPLAYING;
+
+        public static final String TABLE_NAME = "nowplaying";
+        // Column with the foreign key into the movie table.
+        public static final String COLUMN_MOVIE_KEY = "movie_id";
+
+        public static final String COLUMN_PAGE_NUMBER = "page_number";
+        public static final String COLUMN_POSITION = "position";
+
+        public static Uri buildNowPlayingUri(long id) {
+            return ContentUris.withAppendedId(CONTENT_URI, id);
+        }
+
+        public static Uri buildNowPlayingPageAndPosition(int page, int pos) {
+            return CONTENT_URI.buildUpon().appendQueryParameter(COLUMN_PAGE_NUMBER, String.valueOf(page))
+                    .appendQueryParameter(COLUMN_POSITION, String.valueOf(pos)).build();
+        }
+
+        public static Uri buildNowPlayingPage(int page) {
+            return CONTENT_URI.buildUpon().appendQueryParameter(COLUMN_PAGE_NUMBER, String.valueOf(page)).build();
+        }
+
+        public static int getPageNumberFromUri(Uri uri) {
+            return Integer.parseInt(uri.getPathSegments().get(1));
+        }
+    }
+
 }
