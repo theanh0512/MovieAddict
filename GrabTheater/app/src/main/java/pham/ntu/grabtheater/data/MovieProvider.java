@@ -67,7 +67,7 @@ public class MovieProvider extends ContentProvider {
         matcher.addURI(authority, MovieContract.PATH_VIDEO + "/*", VIDEO_IN_MOVIE);
         matcher.addURI(authority, MovieContract.PATH_VIDEO, VIDEO);
         //nowplaying/1/ -> page 1 items
-        matcher.addURI(authority, MovieContract.PATH_NOWPLAYING + "/#", NOW_PLAYING_WITH_PAGE_NUMBER);
+        matcher.addURI(authority, MovieContract.PATH_NOWPLAYING + "/*", NOW_PLAYING_WITH_PAGE_NUMBER);
         matcher.addURI(authority, MovieContract.PATH_NOWPLAYING, NOW_PLAYING);
         return matcher;
     }
@@ -122,7 +122,16 @@ public class MovieProvider extends ContentProvider {
             }
             // "nowplaying/page_number=1"
             case NOW_PLAYING: {
-                retCursor = getNowPlayingItemsInPage(uri, projection, sortOrder);
+                //retCursor = getNowPlayingItemsInPage(uri, projection, sortOrder);
+                retCursor = mHelper.getReadableDatabase().query(
+                        MovieContract.NơwPlayingEntry.TABLE_NAME,
+                        projection,
+                        selection,
+                        selectionArgs,
+                        null,
+                        null,
+                        sortOrder
+                );
                 break;
             }
 

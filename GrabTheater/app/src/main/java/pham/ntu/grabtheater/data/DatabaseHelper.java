@@ -66,7 +66,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 //                // Set up the location column as a foreign key to location table.
 //                " FOREIGN KEY (" + VideoEntry.COLUMN_MOVIE_KEY + ") REFERENCES " +
 //                MovieEntry.TABLE_NAME + " (" + MovieEntry._ID + "), " +
-                " UNIQUE (" + NơwPlayingEntry.COLUMN_MOVIE_KEY + ", " +
+                " UNIQUE (" + NơwPlayingEntry.COLUMN_PAGE_NUMBER + ", " +
                 NơwPlayingEntry.COLUMN_POSITION + ") ON CONFLICT REPLACE);";
         ;
 

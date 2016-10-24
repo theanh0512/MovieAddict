@@ -105,7 +105,7 @@ public class TestDb extends AndroidTestCase {
     /*
         Students:  Here is where you will build code to test that we can insert and query the
         location database.  We've done a lot of work for you.  You'll want to look in TestUtilities
-        where you can uncomment out the "createNorthPoleLocationValues" function.  You can
+        where you can uncomment out the "createMovieValues" function.  You can
         also make use of the ValidateCurrentRecord function from within TestUtilities.
     */
 //    public void testLocationTable() {
@@ -115,7 +115,7 @@ public class TestDb extends AndroidTestCase {
     /*
         Students:  Here is where you will build code to test that we can insert and query the
         database.  We've done a lot of work for you.  You'll want to look in TestUtilities
-        where you can use the "createWeatherValues" function.  You can
+        where you can use the "createNowPlayingValues" function.  You can
         also make use of the validateCurrentRecord function from within TestUtilities.
      */
 //    public void testWeatherTable() {
@@ -139,7 +139,7 @@ public class TestDb extends AndroidTestCase {
 //        SQLiteDatabase db = dbHelper.getWritableDatabase();
 //
 //        // Second Step (Weather): Create weather values
-//        ContentValues weatherValues = TestUtilities.createWeatherValues(locationRowId);
+//        ContentValues weatherValues = TestUtilities.createNowPlayingValues(locationRowId);
 //
 //        // Third Step (Weather): Insert ContentValues into database and get a row ID back
 //        long weatherRowId = db.insert(WeatherContract.WeatherEntry.TABLE_NAME, null, weatherValues);
@@ -187,8 +187,8 @@ public class TestDb extends AndroidTestCase {
 //        SQLiteDatabase db = dbHelper.getWritableDatabase();
 //
 //        // Second Step: Create ContentValues of what you want to insert
-//        // (you can use the createNorthPoleLocationValues if you wish)
-//        ContentValues testValues = TestUtilities.createNorthPoleLocationValues();
+//        // (you can use the createMovieValues if you wish)
+//        ContentValues testValues = TestUtilities.createMovieValues();
 //
 //        // Third Step: Insert ContentValues into database and get a row ID back
 //        long locationRowId;

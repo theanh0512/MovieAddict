@@ -22,9 +22,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Vector;
+
 import pham.ntu.grabtheater.data.MovieContract.MovieEntry;
 import pham.ntu.grabtheater.data.MovieContract.NơwPlayingEntry;
-import pham.ntu.grabtheater.data.MovieContract.VideoEntry;
 
 /**
  * Created by Pham on 12/24/2015.
@@ -168,7 +168,7 @@ class GetDataTask extends AsyncTask<String, Void, List<String>> {
                     ContentValues movieValues = new ContentValues();
                     movieValues.put(MovieEntry.COLUMN_MOVIE_ID, id);
                     movieValues.put(MovieEntry.COLUMN_POSTER_PATH, poster_path);
-                    movieValues.put(MovieEntry.COLUMN_IS_ADULT, adult);
+                    movieValues.put(MovieEntry.COLUMN_IS_ADULT, (adult = true) ? 1 : 0);
                     movieValues.put(MovieEntry.COLUMN_OVERVIEW, overview);
                     movieValues.put(MovieEntry.COLUMN_RELEASE_DATE, release_date);
                     movieValues.put(MovieEntry.COLUMN_GENRE_IDS, stringGenreIds);
@@ -178,7 +178,7 @@ class GetDataTask extends AsyncTask<String, Void, List<String>> {
                     movieValues.put(MovieEntry.COLUMN_BACKDROP_PATH, backdrop_path);
                     movieValues.put(MovieEntry.COLUMN_POPULARITY, popularity);
                     movieValues.put(MovieEntry.COLUMN_VOTE_COUNT, vote_count);
-                    movieValues.put(MovieEntry.COLUMN_HAS_VIDEO, video);
+                    movieValues.put(MovieEntry.COLUMN_HAS_VIDEO, (video = true) ? 1 : 0);
                     movieValues.put(MovieEntry.COLUMN_VOTE_AVERAGE, vote_average);
 
                     ContentValues nowPlayingValues = new ContentValues();
@@ -214,6 +214,11 @@ class GetDataTask extends AsyncTask<String, Void, List<String>> {
                 ContentValues[] cvArray = new ContentValues[cVVector.size()];
                 cVVector.toArray(cvArray);
                 mContext.getContentResolver().bulkInsert(MovieEntry.CONTENT_URI, cvArray);
+            }
+            if (cVVectorNowPlaying.size() > 0) {
+                ContentValues[] cvArray = new ContentValues[cVVectorNowPlaying.size()];
+                cVVectorNowPlaying.toArray(cvArray);
+                mContext.getContentResolver().bulkInsert(NơwPlayingEntry.CONTENT_URI, cvArray);
             }
 
             // Students: Uncomment the next lines to display what what you stored in the bulkInsert

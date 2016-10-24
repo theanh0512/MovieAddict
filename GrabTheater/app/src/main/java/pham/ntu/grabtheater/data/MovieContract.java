@@ -121,7 +121,9 @@ public class MovieContract {
         }
 
         public static int getPageNumberFromUri(Uri uri) {
-            return Integer.parseInt(uri.getPathSegments().get(1));
+            String pageNumber = uri.getQueryParameter(COLUMN_PAGE_NUMBER);
+            if (null != pageNumber && pageNumber.length() > 0) return Integer.parseInt(pageNumber);
+            else return 0;
         }
     }
 
