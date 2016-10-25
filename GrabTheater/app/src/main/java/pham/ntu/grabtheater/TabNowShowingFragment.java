@@ -1,14 +1,18 @@
 package pham.ntu.grabtheater;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.GridView;
 
@@ -18,6 +22,7 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import pham.ntu.grabtheater.data.MovieContract;
 
 
 /**
@@ -28,12 +33,12 @@ import butterknife.OnClick;
  * Use the {@link TabNowShowingFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class TabNowShowingFragment extends Fragment {
+public class TabNowShowingFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
     // TODO: Rename parameter arguments, choose names that match
 
     // TODO: Rename and change types of parameters
-
-    public static ImageAdapter mMovieImageAdapter;
+    private static final int MOVIE_LOADER = 0;
+    public static ImageAdapterWithCursorAdapter mMovieImageAdapterWithCursorAdapter;
     public static List<Movie> moviesList = new ArrayList<Movie>();
     public static int totalPages = 0;
     String movieTitle = null;
@@ -85,15 +90,15 @@ public class TabNowShowingFragment extends Fragment {
         //while(TabNowShowingFragment.moviesList.size()==0){}
         ButterKnife.bind(this, rootView);
 
-        mMovieImageAdapter = new ImageAdapter(getActivity(), TabNowShowingFragment.moviesList);
-        gridview.setAdapter(mMovieImageAdapter);
+        mMovieImageAdapterWithCursorAdapter = new ImageAdapterWithCursorAdapter(getActivity(), null, 0);
+        gridview.setAdapter(mMovieImageAdapterWithCursorAdapter);
         gridview.setDrawSelectorOnTop(false);
-        gridview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            public void onItemClick(AdapterView<?> parent, View v,
-                                    int position, long id) {
-                handler.onHandleItemClick(position);
-            }
-        });
+//        gridview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//            public void onItemClick(AdapterView<?> parent, View v,
+//                                    int position, long id) {
+//                handler.onHandleItemClick(position);
+//            }
+//        });
         if (pageNum == 1) previousButton.setEnabled(false);
         else previousButton.setEnabled(true);
 
@@ -159,6 +164,34 @@ public class TabNowShowingFragment extends Fragment {
     public void onSaveInstanceState(Bundle outState) {
         outState.putInt("page number", pageNum);
         super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        getLoaderManager().initLoader(MOVIE_LOADER, null, this);
+        super.onActivityCreated(savedInstanceState);
+    }
+
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        String sortOrder = MovieContract.NơwPlayingEntry.COLUMN_POSITION + " ASC";
+        Uri movieInNowPlayingUri = MovieContract.NơwPlayingEntry.buildNowPlayingPage(pageNum);
+        return new CursorLoader(getActivity(),
+                movieInNowPlayingUri,
+                null,
+                null,
+                null,
+                sortOrder);
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        mMovieImageAdapterWithCursorAdapter.swapCursor(data);
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+        mMovieImageAdapterWithCursorAdapter.swapCursor(null);
     }
 
     /**

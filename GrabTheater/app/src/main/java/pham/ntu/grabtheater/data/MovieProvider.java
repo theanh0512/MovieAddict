@@ -123,15 +123,16 @@ public class MovieProvider extends ContentProvider {
             // "nowplaying/page_number=1"
             case NOW_PLAYING: {
                 //retCursor = getNowPlayingItemsInPage(uri, projection, sortOrder);
-                retCursor = mHelper.getReadableDatabase().query(
-                        MovieContract.NơwPlayingEntry.TABLE_NAME,
-                        projection,
-                        selection,
-                        selectionArgs,
-                        null,
-                        null,
-                        sortOrder
-                );
+//                retCursor = mHelper.getReadableDatabase().query(
+//                        MovieContract.NơwPlayingEntry.TABLE_NAME,
+//                        projection,
+//                        selection,
+//                        selectionArgs,
+//                        null,
+//                        null,
+//                        sortOrder
+//                );
+                retCursor = getNowPlayingItemsInPage(uri, projection, sortOrder);
                 break;
             }
 
@@ -244,7 +245,7 @@ public class MovieProvider extends ContentProvider {
                 int returnCount = 0;
                 try {
                     for (ContentValues value : values) {
-                        long _id = db.insertWithOnConflict(MovieContract.MovieEntry.TABLE_NAME, null, value,SQLiteDatabase.CONFLICT_IGNORE);
+                        long _id = db.insertWithOnConflict(MovieContract.MovieEntry.TABLE_NAME, null, value, SQLiteDatabase.CONFLICT_IGNORE);
                         if (_id != -1) {
                             returnCount++;
                         }

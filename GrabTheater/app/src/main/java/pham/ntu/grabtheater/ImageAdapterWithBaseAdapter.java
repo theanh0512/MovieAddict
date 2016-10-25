@@ -15,12 +15,12 @@ import java.util.List;
 /**
  * Created by Administrator PC on 3/31/2016.
  */
-class ImageAdapter extends BaseAdapter {
+class ImageAdapterWithBaseAdapter extends BaseAdapter {
     private Context mContext;
     private String imagePath;
     private List<Movie> moviesList;
 
-    public ImageAdapter(Context c, List<Movie> moviesList) {
+    public ImageAdapterWithBaseAdapter(Context c, List<Movie> moviesList) {
         mContext = c;
         this.moviesList = moviesList;
     }
@@ -80,7 +80,8 @@ class ImageAdapter extends BaseAdapter {
                                 });
                     }
                 });
-            }catch (IndexOutOfBoundsException e){}
+            } catch (IndexOutOfBoundsException e) {
+            }
         }
         return imageView;
     }

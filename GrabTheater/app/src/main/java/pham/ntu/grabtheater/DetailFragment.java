@@ -36,7 +36,7 @@ import butterknife.OnItemClick;
 public class DetailFragment extends Fragment {
     public static List<Movie> moviesList = new ArrayList<>();
     public static List<Video> trailersList = new ArrayList<>();
-    public static ImageAdapter mMovieImageAdapter;
+    public static ImageAdapterWithBaseAdapter mMovieImageAdapter;
     public static String additionalUrl = null;
     boolean isLiked = false;
     @BindView(R.id.title_textview)
@@ -98,7 +98,7 @@ public class DetailFragment extends Fragment {
             dataTaskForDetailActivity.execute();
 
             gridview.setExpanded(true);
-            mMovieImageAdapter = new ImageAdapter(getActivity(), DetailFragment.moviesList);
+            mMovieImageAdapter = new ImageAdapterWithBaseAdapter(getActivity(), DetailFragment.moviesList);
             gridview.setAdapter(mMovieImageAdapter);
             gridview.setDrawSelectorOnTop(false);
             if (sharedPreferences.getStringSet("titleSet", null) != null

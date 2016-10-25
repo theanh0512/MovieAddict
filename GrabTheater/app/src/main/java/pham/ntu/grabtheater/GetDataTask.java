@@ -237,8 +237,8 @@ class GetDataTask extends AsyncTask<String, Void, List<String>> {
 
             Log.d(LOG_TAG, "GetDataTask Complete. " + cVVector.size() + " Inserted");
 
-            if (Objects.equals(additionalUrl, MainActivity.additionalUrl))
-                TabNowShowingFragment.mMovieImageAdapter.notifyDataSetChanged();
+//            if (Objects.equals(additionalUrl, MainActivity.additionalUrl))
+//                TabNowShowingFragment.mMovieImageAdapterWithCursorAdapter.notifyDataSetChanged();
             if (Objects.equals(additionalUrl, DetailFragment.additionalUrl))
                 DetailFragment.mMovieImageAdapter.notifyDataSetChanged();
 
@@ -250,8 +250,8 @@ class GetDataTask extends AsyncTask<String, Void, List<String>> {
 
     @Override
     protected void onPostExecute(List<String> strings) {
-        if (Objects.equals(additionalUrl, MainActivity.additionalUrl))
-            TabNowShowingFragment.mMovieImageAdapter.notifyDataSetChanged();
+//        if (Objects.equals(additionalUrl, MainActivity.additionalUrl))
+//            TabNowShowingFragment.mMovieImageAdapterWithCursorAdapter.notifyDataSetChanged();
         if (Objects.equals(additionalUrl, DetailFragment.additionalUrl))
             DetailFragment.mMovieImageAdapter.notifyDataSetChanged();
     }

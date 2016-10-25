@@ -25,7 +25,7 @@ import butterknife.OnItemClick;
 public class TabFavouritesFragment extends Fragment {
     public static SharedPreferences likedMovies;
     public static List<Movie> moviesFavouriteList = new ArrayList<>();
-    public static ImageAdapter mMovieImageAdapter;
+    public static ImageAdapterWithBaseAdapter mMovieImageAdapterWithBaseAdapter;
     @BindView(R.id.gridView_favourite)
     GridView favourite_gridview;
 
@@ -60,8 +60,8 @@ public class TabFavouritesFragment extends Fragment {
 
         View rootView = inflater.inflate(R.layout.fragment_tab_favourites, container, false);
         ButterKnife.bind(this, rootView);
-        mMovieImageAdapter = new ImageAdapter(getActivity(), moviesFavouriteList);
-        favourite_gridview.setAdapter(mMovieImageAdapter);
+        mMovieImageAdapterWithBaseAdapter = new ImageAdapterWithBaseAdapter(getActivity(), moviesFavouriteList);
+        favourite_gridview.setAdapter(mMovieImageAdapterWithBaseAdapter);
         favourite_gridview.setDrawSelectorOnTop(false);
         return rootView;
     }
