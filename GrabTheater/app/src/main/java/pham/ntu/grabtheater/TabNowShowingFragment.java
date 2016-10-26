@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.GridView;
 
@@ -36,8 +37,14 @@ import pham.ntu.grabtheater.data.MovieContract;
 public class TabNowShowingFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
     // TODO: Rename parameter arguments, choose names that match
 
+    static final int COL_MOVIE_ID = 0;
+    static final int COL_POSTER_PATH = 1;
     // TODO: Rename and change types of parameters
     private static final int MOVIE_LOADER = 0;
+    private static final String[] MOVIE_COLUMNS = {
+            MovieContract.MovieEntry.TABLE_NAME + "." + MovieContract.MovieEntry._ID,
+            MovieContract.MovieEntry.COLUMN_POSTER_PATH
+    };
     public static ImageAdapterWithCursorAdapter mMovieImageAdapterWithCursorAdapter;
     public static List<Movie> moviesList = new ArrayList<Movie>();
     public static int totalPages = 0;
@@ -50,6 +57,7 @@ public class TabNowShowingFragment extends Fragment implements LoaderManager.Loa
     Button nextButton;
     @BindView(R.id.button_previous)
     Button previousButton;
+    Cursor mCursor;
     private OnFragmentInteractionListener mListener;
 
     public TabNowShowingFragment() {
@@ -93,12 +101,12 @@ public class TabNowShowingFragment extends Fragment implements LoaderManager.Loa
         mMovieImageAdapterWithCursorAdapter = new ImageAdapterWithCursorAdapter(getActivity(), null, 0);
         gridview.setAdapter(mMovieImageAdapterWithCursorAdapter);
         gridview.setDrawSelectorOnTop(false);
-//        gridview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//            public void onItemClick(AdapterView<?> parent, View v,
-//                                    int position, long id) {
-//                handler.onHandleItemClick(position);
-//            }
-//        });
+        gridview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            public void onItemClick(AdapterView<?> parent, View v,
+                                    int position, long id) {
+                handler.onHandleItemClick(position);
+            }
+        });
         if (pageNum == 1) previousButton.setEnabled(false);
         else previousButton.setEnabled(true);
 
@@ -113,11 +121,7 @@ public class TabNowShowingFragment extends Fragment implements LoaderManager.Loa
             if (pageNum == totalPages) nextButton.setEnabled(false);
             GetDataTask dataTaskForNowShowing = new GetDataTask(this.getContext(), MainActivity.additionalUrl, true, pageNum);
             dataTaskForNowShowing.execute();
-            int i = 1000000;
-            while (i > 0) {
-                i--;
-                gridview.invalidateViews();
-            }
+            getLoaderManager().restartLoader(MOVIE_LOADER, null, this);
         }
     }
 
@@ -129,11 +133,7 @@ public class TabNowShowingFragment extends Fragment implements LoaderManager.Loa
             nextButton.setEnabled(true);
             GetDataTask dataTaskForNowShowing = new GetDataTask(this.getContext(), MainActivity.additionalUrl, true, pageNum);
             dataTaskForNowShowing.execute();
-            int i = 1000000;
-            while (i > 0) {
-                i--;
-                gridview.invalidateViews();
-            }
+            getLoaderManager().restartLoader(MOVIE_LOADER, null, this);
         }
     }
 
@@ -178,7 +178,7 @@ public class TabNowShowingFragment extends Fragment implements LoaderManager.Loa
         Uri movieInNowPlayingUri = MovieContract.NơwPlayingEntry.buildNowPlayingPage(pageNum);
         return new CursorLoader(getActivity(),
                 movieInNowPlayingUri,
-                null,
+                MOVIE_COLUMNS,
                 null,
                 null,
                 sortOrder);
@@ -186,12 +186,21 @@ public class TabNowShowingFragment extends Fragment implements LoaderManager.Loa
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        mMovieImageAdapterWithCursorAdapter.swapCursor(data);
+        mCursor=data;
+        mMovieImageAdapterWithCursorAdapter.swapCursor(mCursor);
     }
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
         mMovieImageAdapterWithCursorAdapter.swapCursor(null);
+    }
+
+    @Override
+    public void onDestroy() {
+        if(mCursor!=null && !mCursor.isClosed()) {
+            mCursor.close();
+        }
+        super.onDestroy();
     }
 
     /**

@@ -2,9 +2,6 @@ package pham.ntu.grabtheater;
 
 import android.content.ContentValues;
 import android.content.Context;
-import android.database.Cursor;
-import android.database.DatabaseUtils;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.util.Log;
 
@@ -222,20 +219,20 @@ class GetDataTask extends AsyncTask<String, Void, List<String>> {
             }
 
             // Students: Uncomment the next lines to display what what you stored in the bulkInsert
-            Uri nowPlayingAtPageUri = NơwPlayingEntry.buildNowPlayingPage(pageNum);
-            Cursor cur = mContext.getContentResolver().query(nowPlayingAtPageUri,
-                    null, null, null, null);
-
-            cVVector = new Vector<>(cur.getCount());
-            if (cur.moveToFirst()) {
-                do {
-                    ContentValues cv = new ContentValues();
-                    DatabaseUtils.cursorRowToContentValues(cur, cv);
-                    cVVector.add(cv);
-                } while (cur.moveToNext());
-            }
-
-            Log.d(LOG_TAG, "GetDataTask Complete. " + cVVector.size() + " Inserted");
+//            Uri nowPlayingAtPageUri = NơwPlayingEntry.buildNowPlayingPage(pageNum);
+//            Cursor cur = mContext.getContentResolver().query(nowPlayingAtPageUri,
+//                    null, null, null, null);
+//
+//            cVVector = new Vector<>(cur.getCount());
+//            if (cur.moveToFirst()) {
+//                do {
+//                    ContentValues cv = new ContentValues();
+//                    DatabaseUtils.cursorRowToContentValues(cur, cv);
+//                    cVVector.add(cv);
+//                } while (cur.moveToNext());
+//            }
+//
+//            Log.d(LOG_TAG, "GetDataTask Complete. " + cVVector.size() + " Inserted");
 
 //            if (Objects.equals(additionalUrl, MainActivity.additionalUrl))
 //                TabNowShowingFragment.mMovieImageAdapterWithCursorAdapter.notifyDataSetChanged();

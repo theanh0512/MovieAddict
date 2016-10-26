@@ -6,15 +6,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CursorAdapter;
-import android.widget.GridView;
 import android.widget.ImageView;
 
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
-
-import pham.ntu.grabtheater.data.MovieContract;
 
 /**
  * Created by Administrator PC on 3/31/2016.
@@ -38,9 +35,8 @@ class ImageAdapterWithCursorAdapter extends CursorAdapter {
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
         final ImageView imageView = (ImageView) view;
-        int idx_image_path = cursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_POSTER_PATH);
         try {
-            imagePath = cursor.getString(idx_image_path);
+            imagePath = cursor.getString(TabNowShowingFragment.COL_POSTER_PATH);
             imagePath = Config.IMG_BASE_URL
                     + imagePath + Config.PREFIX_API_KEY + Config.THE_MOVIE_DB_API_KEY;
             Picasso.with(mContext).load(imagePath).placeholder(R.drawable.ic_place_holder)
