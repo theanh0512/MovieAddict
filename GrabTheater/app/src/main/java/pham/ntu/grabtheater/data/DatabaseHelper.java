@@ -6,6 +6,8 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 import pham.ntu.grabtheater.data.MovieContract.MovieEntry;
 import pham.ntu.grabtheater.data.MovieContract.NơwPlayingEntry;
+import pham.ntu.grabtheater.data.MovieContract.PopularEntry;
+import pham.ntu.grabtheater.data.MovieContract.TopRatedEntry;
 import pham.ntu.grabtheater.data.MovieContract.VideoEntry;
 
 /**
@@ -68,11 +70,32 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 //                MovieEntry.TABLE_NAME + " (" + MovieEntry._ID + "), " +
                 " UNIQUE (" + NơwPlayingEntry.COLUMN_PAGE_NUMBER + ", " +
                 NơwPlayingEntry.COLUMN_POSITION + ") ON CONFLICT REPLACE);";
-        ;
+
+        final String SQL_CREATE_POPULAR_TABLE = "CREATE TABLE " + PopularEntry.TABLE_NAME + " (" +
+                PopularEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
+                //id associated with movie
+                PopularEntry.COLUMN_MOVIE_KEY + " INTEGER NOT NULL, " +
+                PopularEntry.COLUMN_PAGE_NUMBER + " INTEGER NOT NULL, " +
+                PopularEntry.COLUMN_POSITION + " INTEGER NOT NULL, " +
+
+                " UNIQUE (" + PopularEntry.COLUMN_PAGE_NUMBER + ", " +
+                PopularEntry.COLUMN_POSITION + ") ON CONFLICT REPLACE);";
+
+        final String SQL_CREATE_TOP_RATED_TABLE = "CREATE TABLE " + TopRatedEntry.TABLE_NAME + " (" +
+                TopRatedEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
+                //id associated with movie
+                TopRatedEntry.COLUMN_MOVIE_KEY + " INTEGER NOT NULL, " +
+                TopRatedEntry.COLUMN_PAGE_NUMBER + " INTEGER NOT NULL, " +
+                TopRatedEntry.COLUMN_POSITION + " INTEGER NOT NULL, " +
+
+                " UNIQUE (" + TopRatedEntry.COLUMN_PAGE_NUMBER + ", " +
+                TopRatedEntry.COLUMN_POSITION + ") ON CONFLICT REPLACE);";
 
         sqLiteDatabase.execSQL(SQL_CREATE_MOVIE_TABLE);
         sqLiteDatabase.execSQL(SQL_CREATE_VIDEO_TABLE);
         sqLiteDatabase.execSQL(SQL_CREATE_NOW_PLAYING_TABLE);
+        sqLiteDatabase.execSQL(SQL_CREATE_POPULAR_TABLE);
+        sqLiteDatabase.execSQL(SQL_CREATE_TOP_RATED_TABLE);
     }
 
     @Override
@@ -86,6 +109,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + MovieEntry.TABLE_NAME);
         sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + VideoEntry.TABLE_NAME);
         sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + NơwPlayingEntry.TABLE_NAME);
+        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + PopularEntry.TABLE_NAME);
+        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + TopRatedEntry.TABLE_NAME);
         onCreate(sqLiteDatabase);
     }
 }

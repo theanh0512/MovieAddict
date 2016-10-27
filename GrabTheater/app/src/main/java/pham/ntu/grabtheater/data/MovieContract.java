@@ -23,6 +23,8 @@ public class MovieContract {
     public static final String PATH_MOVIE = "movie";
     public static final String PATH_VIDEO = "video";
     public static final String PATH_NOWPLAYING = "nowplaying";
+    public static final String PATH_POPULAR = "popular";
+    public static final String PATH_TOPRATED = "toprated";
 
     /*
         Inner class that defines the contents of the Movie table
@@ -117,6 +119,70 @@ public class MovieContract {
         }
 
         public static Uri buildNowPlayingPage(int page) {
+            return CONTENT_URI.buildUpon().appendQueryParameter(COLUMN_PAGE_NUMBER, String.valueOf(page)).build();
+        }
+
+        public static int getPageNumberFromUri(Uri uri) {
+            String pageNumber = uri.getQueryParameter(COLUMN_PAGE_NUMBER);
+            if (null != pageNumber && pageNumber.length() > 0) return Integer.parseInt(pageNumber);
+            else return 0;
+        }
+    }
+
+    public static final class PopularEntry implements BaseColumns {
+
+        public static final Uri CONTENT_URI =
+                BASE_CONTENT_URI.buildUpon().appendPath(PATH_POPULAR).build();
+
+        public static final String CONTENT_TYPE =
+                ContentResolver.CURSOR_DIR_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_POPULAR;
+        public static final String CONTENT_ITEM_TYPE =
+                ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_POPULAR;
+
+        public static final String TABLE_NAME = "popular";
+        // Column with the foreign key into the movie table.
+        public static final String COLUMN_MOVIE_KEY = "movie_id";
+
+        public static final String COLUMN_PAGE_NUMBER = "page_number";
+        public static final String COLUMN_POSITION = "position";
+
+        public static Uri buildPopularUri(long id) {
+            return ContentUris.withAppendedId(CONTENT_URI, id);
+        }
+
+        public static Uri buildPopularPage(int page) {
+            return CONTENT_URI.buildUpon().appendQueryParameter(COLUMN_PAGE_NUMBER, String.valueOf(page)).build();
+        }
+
+        public static int getPageNumberFromUri(Uri uri) {
+            String pageNumber = uri.getQueryParameter(COLUMN_PAGE_NUMBER);
+            if (null != pageNumber && pageNumber.length() > 0) return Integer.parseInt(pageNumber);
+            else return 0;
+        }
+    }
+
+    public static final class TopRatedEntry implements BaseColumns {
+
+        public static final Uri CONTENT_URI =
+                BASE_CONTENT_URI.buildUpon().appendPath(PATH_TOPRATED).build();
+
+        public static final String CONTENT_TYPE =
+                ContentResolver.CURSOR_DIR_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_TOPRATED;
+        public static final String CONTENT_ITEM_TYPE =
+                ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_TOPRATED;
+
+        public static final String TABLE_NAME = "toprated";
+        // Column with the foreign key into the movie table.
+        public static final String COLUMN_MOVIE_KEY = "movie_id";
+
+        public static final String COLUMN_PAGE_NUMBER = "page_number";
+        public static final String COLUMN_POSITION = "position";
+
+        public static Uri buildTopRatedUri(long id) {
+            return ContentUris.withAppendedId(CONTENT_URI, id);
+        }
+
+        public static Uri buildTopRatedPage(int page) {
             return CONTENT_URI.buildUpon().appendQueryParameter(COLUMN_PAGE_NUMBER, String.valueOf(page)).build();
         }
 

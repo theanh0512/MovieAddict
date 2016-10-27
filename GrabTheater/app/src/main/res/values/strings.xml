@@ -8,9 +8,9 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="title_activity_detail">DetailActivity</string>
 
-    <string name="alert_message">There is no internet connection</string>
+    <string name="alert_message">There is no internet connection. Application only can display whatever has loaded previously.</string>
     <string name="alert_title">No Internet</string>
-    <string name="alert_button">Close</string>
+    <string name="alert_button">OK</string>
 
     <string name="pref_sort_types_label">Sort</string>
     <string name="pref_sort_types_label_toprated">Top Rated</string>

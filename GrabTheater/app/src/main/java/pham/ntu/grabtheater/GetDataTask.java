@@ -2,7 +2,11 @@ package pham.ntu.grabtheater;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 
 import org.json.JSONArray;
@@ -22,6 +26,8 @@ import java.util.Vector;
 
 import pham.ntu.grabtheater.data.MovieContract.MovieEntry;
 import pham.ntu.grabtheater.data.MovieContract.NơwPlayingEntry;
+import pham.ntu.grabtheater.data.MovieContract.PopularEntry;
+import pham.ntu.grabtheater.data.MovieContract.TopRatedEntry;
 
 /**
  * Created by Pham on 12/24/2015.
@@ -41,6 +47,9 @@ class GetDataTask extends AsyncTask<String, Void, List<String>> {
         mContext = context;
         this.additionalUrl = additionalUrl;
         this.containPages = containPages;
+        if(!isOnline()) {
+            displayNoInternetDialog();
+        }
     }
 
     GetDataTask(Context context, String additionalUrl, boolean containPages, int pageNum) {
@@ -48,6 +57,35 @@ class GetDataTask extends AsyncTask<String, Void, List<String>> {
         this.additionalUrl = additionalUrl;
         this.containPages = containPages;
         this.pageNum = pageNum;
+        if(!isOnline()) {
+            displayNoInternetDialog();
+        }
+    }
+
+    private void displayNoInternetDialog() {
+        try {
+            AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+            builder.setTitle(mContext.getString(R.string.alert_title))
+                    .setMessage(mContext.getString(R.string.alert_message))
+                    .setCancelable(false)
+                    .setNegativeButton(mContext.getString(R.string.alert_button), new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            dialog.cancel();
+                        }
+                    });
+            AlertDialog alert = builder.create();
+            alert.show();
+        } catch (Exception e) {
+            Log.d(MainActivity.class.getSimpleName(), "Show Dialog: " + e.getMessage());
+        }
+    }
+
+    //Check whether there is an internet connection
+    public boolean isOnline() {
+        ConnectivityManager cm =
+                (ConnectivityManager) mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = cm.getActiveNetworkInfo();
+        return netInfo != null && netInfo.isConnectedOrConnecting();
     }
 
     public static String convertArrayToString(int[] array) {
@@ -133,7 +171,7 @@ class GetDataTask extends AsyncTask<String, Void, List<String>> {
 
             int len = jArray.length();
             Vector<ContentValues> cVVector = new Vector<>(len);
-            Vector<ContentValues> cVVectorNowPlaying = new Vector<>(len);
+            Vector<ContentValues> cVVectorOrder = new Vector<>(len);
             if (jArray.length() == 1) len = 2;
             for (int i = 0; i < len; i++) {
                 JSONObject json = jArray.getJSONObject(i);
@@ -178,13 +216,29 @@ class GetDataTask extends AsyncTask<String, Void, List<String>> {
                     movieValues.put(MovieEntry.COLUMN_HAS_VIDEO, (video = true) ? 1 : 0);
                     movieValues.put(MovieEntry.COLUMN_VOTE_AVERAGE, vote_average);
 
-                    ContentValues nowPlayingValues = new ContentValues();
-                    nowPlayingValues.put(NơwPlayingEntry.COLUMN_MOVIE_KEY, id);
-                    nowPlayingValues.put(NơwPlayingEntry.COLUMN_POSITION, i);
-                    nowPlayingValues.put(NơwPlayingEntry.COLUMN_PAGE_NUMBER, pageNum);
+                    if (additionalUrl.contains("playing")) {
+                        ContentValues nowPlayingValues = new ContentValues();
+                        nowPlayingValues.put(NơwPlayingEntry.COLUMN_MOVIE_KEY, id);
+                        nowPlayingValues.put(NơwPlayingEntry.COLUMN_POSITION, i);
+                        nowPlayingValues.put(NơwPlayingEntry.COLUMN_PAGE_NUMBER, pageNum);
 
+                        cVVectorOrder.add(nowPlayingValues);
+                    } else if (additionalUrl.contains("popular")) {
+                        ContentValues popularValues = new ContentValues();
+                        popularValues.put(PopularEntry.COLUMN_MOVIE_KEY, id);
+                        popularValues.put(PopularEntry.COLUMN_POSITION, i);
+                        popularValues.put(PopularEntry.COLUMN_PAGE_NUMBER, pageNum);
+
+                        cVVectorOrder.add(popularValues);
+                    } else if (additionalUrl.contains("rated")) {
+                        ContentValues topRatedValues = new ContentValues();
+                        topRatedValues.put(TopRatedEntry.COLUMN_MOVIE_KEY, id);
+                        topRatedValues.put(TopRatedEntry.COLUMN_POSITION, i);
+                        topRatedValues.put(TopRatedEntry.COLUMN_PAGE_NUMBER, pageNum);
+
+                        cVVectorOrder.add(topRatedValues);
+                    }
                     cVVector.add(movieValues);
-                    cVVectorNowPlaying.add(nowPlayingValues);
 
                     //jsonArray.add(s);
                     if (Objects.equals(additionalUrl, MainActivity.additionalUrl)) {
@@ -212,30 +266,17 @@ class GetDataTask extends AsyncTask<String, Void, List<String>> {
                 cVVector.toArray(cvArray);
                 mContext.getContentResolver().bulkInsert(MovieEntry.CONTENT_URI, cvArray);
             }
-            if (cVVectorNowPlaying.size() > 0) {
-                ContentValues[] cvArray = new ContentValues[cVVectorNowPlaying.size()];
-                cVVectorNowPlaying.toArray(cvArray);
-                mContext.getContentResolver().bulkInsert(NơwPlayingEntry.CONTENT_URI, cvArray);
+            if (cVVectorOrder.size() > 0) {
+                ContentValues[] cvArray = new ContentValues[cVVectorOrder.size()];
+                cVVectorOrder.toArray(cvArray);
+                if (additionalUrl.contains("playing"))
+                    mContext.getContentResolver().bulkInsert(NơwPlayingEntry.CONTENT_URI, cvArray);
+                else if (additionalUrl.contains("popular"))
+                    mContext.getContentResolver().bulkInsert(PopularEntry.CONTENT_URI, cvArray);
+                else if (additionalUrl.contains("rated"))
+                    mContext.getContentResolver().bulkInsert(TopRatedEntry.CONTENT_URI, cvArray);
             }
 
-            // Students: Uncomment the next lines to display what what you stored in the bulkInsert
-//            Uri nowPlayingAtPageUri = NơwPlayingEntry.buildNowPlayingPage(pageNum);
-//            Cursor cur = mContext.getContentResolver().query(nowPlayingAtPageUri,
-//                    null, null, null, null);
-//
-//            cVVector = new Vector<>(cur.getCount());
-//            if (cur.moveToFirst()) {
-//                do {
-//                    ContentValues cv = new ContentValues();
-//                    DatabaseUtils.cursorRowToContentValues(cur, cv);
-//                    cVVector.add(cv);
-//                } while (cur.moveToNext());
-//            }
-//
-//            Log.d(LOG_TAG, "GetDataTask Complete. " + cVVector.size() + " Inserted");
-
-//            if (Objects.equals(additionalUrl, MainActivity.additionalUrl))
-//                TabNowShowingFragment.mMovieImageAdapterWithCursorAdapter.notifyDataSetChanged();
             if (Objects.equals(additionalUrl, DetailFragment.additionalUrl))
                 DetailFragment.mMovieImageAdapter.notifyDataSetChanged();
 

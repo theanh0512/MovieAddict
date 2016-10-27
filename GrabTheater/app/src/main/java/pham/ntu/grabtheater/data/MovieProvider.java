@@ -19,8 +19,12 @@ public class MovieProvider extends ContentProvider {
     static final int VIDEO = 300;
     static final int NOW_PLAYING_WITH_PAGE_NUMBER = 401;
     static final int NOW_PLAYING = 400;
+    static final int POPULAR = 202;
+    static final int TOP_RATED = 203;
     private static final UriMatcher sUriMatcher = buildUriMatcher();
     private static final SQLiteQueryBuilder sVideoInMovieQueryBuilder;
+    private static final SQLiteQueryBuilder sPopularQueryBuilder;
+    private static final SQLiteQueryBuilder sTopRatedQueryBuilder;
     private static final SQLiteQueryBuilder sNowPlayingQueryBuilder;
     private static final String sMovieIDSelection =
             MovieContract.VideoEntry.TABLE_NAME +
@@ -28,6 +32,12 @@ public class MovieProvider extends ContentProvider {
     private static final String sNowPlayingSelection =
             MovieContract.NơwPlayingEntry.TABLE_NAME +
                     "." + MovieContract.NơwPlayingEntry.COLUMN_PAGE_NUMBER + " = ? ";
+    private static final String sPopularSelection =
+            MovieContract.PopularEntry.TABLE_NAME +
+                    "." + MovieContract.PopularEntry.COLUMN_PAGE_NUMBER + " = ? ";
+    private static final String sTopRatedSelection =
+            MovieContract.TopRatedEntry.TABLE_NAME +
+                    "." + MovieContract.TopRatedEntry.COLUMN_PAGE_NUMBER + " = ? ";
 
     static {
         sVideoInMovieQueryBuilder = new SQLiteQueryBuilder();
@@ -39,6 +49,30 @@ public class MovieProvider extends ContentProvider {
                         "." + MovieContract.VideoEntry.COLUMN_MOVIE_KEY +
                         " = " + MovieContract.MovieEntry.TABLE_NAME +
                         "." + MovieContract.MovieEntry._ID);
+    }
+
+    static {
+        sPopularQueryBuilder = new SQLiteQueryBuilder();
+
+        sPopularQueryBuilder.setTables(
+                MovieContract.MovieEntry.TABLE_NAME + " INNER JOIN " +
+                        MovieContract.PopularEntry.TABLE_NAME +
+                        " ON " + MovieContract.PopularEntry.TABLE_NAME +
+                        "." + MovieContract.PopularEntry.COLUMN_MOVIE_KEY +
+                        " = " + MovieContract.MovieEntry.TABLE_NAME +
+                        "." + MovieContract.MovieEntry.COLUMN_MOVIE_ID);
+    }
+
+    static {
+        sTopRatedQueryBuilder = new SQLiteQueryBuilder();
+
+        sTopRatedQueryBuilder.setTables(
+                MovieContract.MovieEntry.TABLE_NAME + " INNER JOIN " +
+                        MovieContract.TopRatedEntry.TABLE_NAME +
+                        " ON " + MovieContract.TopRatedEntry.TABLE_NAME +
+                        "." + MovieContract.TopRatedEntry.COLUMN_MOVIE_KEY +
+                        " = " + MovieContract.MovieEntry.TABLE_NAME +
+                        "." + MovieContract.MovieEntry.COLUMN_MOVIE_ID);
     }
 
     static {
@@ -69,6 +103,8 @@ public class MovieProvider extends ContentProvider {
         //nowplaying/1/ -> page 1 items
         matcher.addURI(authority, MovieContract.PATH_NOWPLAYING + "/*", NOW_PLAYING_WITH_PAGE_NUMBER);
         matcher.addURI(authority, MovieContract.PATH_NOWPLAYING, NOW_PLAYING);
+        matcher.addURI(authority, MovieContract.PATH_POPULAR, POPULAR);
+        matcher.addURI(authority, MovieContract.PATH_TOPRATED, TOP_RATED);
         return matcher;
     }
 
@@ -120,19 +156,17 @@ public class MovieProvider extends ContentProvider {
                 retCursor = getNowPlayingItemsInPage(uri, projection, sortOrder);
                 break;
             }
-            // "nowplaying/page_number=1"
+            // "nowplaying?page_number=1"
             case NOW_PLAYING: {
-                //retCursor = getNowPlayingItemsInPage(uri, projection, sortOrder);
-//                retCursor = mHelper.getReadableDatabase().query(
-//                        MovieContract.NơwPlayingEntry.TABLE_NAME,
-//                        projection,
-//                        selection,
-//                        selectionArgs,
-//                        null,
-//                        null,
-//                        sortOrder
-//                );
                 retCursor = getNowPlayingItemsInPage(uri, projection, sortOrder);
+                break;
+            }
+            case POPULAR: {
+                retCursor = getPopularItemsInPage(uri, projection, sortOrder);
+                break;
+            }
+            case TOP_RATED: {
+                retCursor = getTopRatedItemsInPage(uri, projection, sortOrder);
                 break;
             }
 
@@ -166,6 +200,38 @@ public class MovieProvider extends ContentProvider {
         String selection = sNowPlayingSelection;
 
         return sNowPlayingQueryBuilder.query(mHelper.getReadableDatabase(),
+                projection,
+                selection,
+                selectionArgs,
+                null,
+                null,
+                sortOrder
+        );
+    }
+
+    private Cursor getPopularItemsInPage(Uri uri, String[] projection, String sortOrder) {
+        int pageNumber = MovieContract.PopularEntry.getPageNumberFromUri(uri);
+
+        String[] selectionArgs = new String[]{Integer.toString(pageNumber)};
+        String selection = sPopularSelection;
+
+        return sPopularQueryBuilder.query(mHelper.getReadableDatabase(),
+                projection,
+                selection,
+                selectionArgs,
+                null,
+                null,
+                sortOrder
+        );
+    }
+
+    private Cursor getTopRatedItemsInPage(Uri uri, String[] projection, String sortOrder) {
+        int pageNumber = MovieContract.TopRatedEntry.getPageNumberFromUri(uri);
+
+        String[] selectionArgs = new String[]{Integer.toString(pageNumber)};
+        String selection = sTopRatedSelection;
+
+        return sTopRatedQueryBuilder.query(mHelper.getReadableDatabase(),
                 projection,
                 selection,
                 selectionArgs,
@@ -272,6 +338,38 @@ public class MovieProvider extends ContentProvider {
                 }
                 getContext().getContentResolver().notifyChange(uri, null);
                 return returnCount2;
+            case POPULAR:
+                db.beginTransaction();
+                int returnCountPopular = 0;
+                try {
+                    for (ContentValues value : values) {
+                        long _id = db.insertWithOnConflict(MovieContract.PopularEntry.TABLE_NAME, null, value, SQLiteDatabase.CONFLICT_REPLACE);
+                        if (_id != -1) {
+                            returnCountPopular++;
+                        }
+                    }
+                    db.setTransactionSuccessful();
+                } finally {
+                    db.endTransaction();
+                }
+                getContext().getContentResolver().notifyChange(uri, null);
+                return returnCountPopular;
+            case TOP_RATED:
+                db.beginTransaction();
+                int returnCountTopRated = 0;
+                try {
+                    for (ContentValues value : values) {
+                        long _id = db.insertWithOnConflict(MovieContract.TopRatedEntry.TABLE_NAME, null, value, SQLiteDatabase.CONFLICT_REPLACE);
+                        if (_id != -1) {
+                            returnCountTopRated++;
+                        }
+                    }
+                    db.setTransactionSuccessful();
+                } finally {
+                    db.endTransaction();
+                }
+                getContext().getContentResolver().notifyChange(uri, null);
+                return returnCountTopRated;
             default:
                 return super.bulkInsert(uri, values);
         }
@@ -296,6 +394,14 @@ public class MovieProvider extends ContentProvider {
             case NOW_PLAYING:
                 rowsDeleted = db.delete(
                         MovieContract.NơwPlayingEntry.TABLE_NAME, selection, selectionArgs);
+                break;
+            case POPULAR:
+                rowsDeleted = db.delete(
+                        MovieContract.PopularEntry.TABLE_NAME, selection, selectionArgs);
+                break;
+            case TOP_RATED:
+                rowsDeleted = db.delete(
+                        MovieContract.TopRatedEntry.TABLE_NAME, selection, selectionArgs);
                 break;
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
@@ -324,6 +430,14 @@ public class MovieProvider extends ContentProvider {
                 break;
             case NOW_PLAYING:
                 rowsUpdated = db.update(MovieContract.NơwPlayingEntry.TABLE_NAME, values, selection,
+                        selectionArgs);
+                break;
+            case POPULAR:
+                rowsUpdated = db.update(MovieContract.PopularEntry.TABLE_NAME, values, selection,
+                        selectionArgs);
+                break;
+            case TOP_RATED:
+                rowsUpdated = db.update(MovieContract.TopRatedEntry.TABLE_NAME, values, selection,
                         selectionArgs);
                 break;
             default:

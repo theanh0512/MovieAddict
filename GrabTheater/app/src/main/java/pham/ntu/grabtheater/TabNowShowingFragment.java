@@ -175,9 +175,15 @@ public class TabNowShowingFragment extends Fragment implements LoaderManager.Loa
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         String sortOrder = MovieContract.NơwPlayingEntry.COLUMN_POSITION + " ASC";
-        Uri movieInNowPlayingUri = MovieContract.NơwPlayingEntry.buildNowPlayingPage(pageNum);
+        Uri moviesInChosenOrderUri;
+        if (MainActivity.additionalUrl.equals(getString(R.string.pref_sort_types_nowplaying)))
+            moviesInChosenOrderUri = MovieContract.NơwPlayingEntry.buildNowPlayingPage(pageNum);
+        else if (MainActivity.additionalUrl.equals(getString(R.string.pref_sort_types_popular)))
+            moviesInChosenOrderUri = MovieContract.PopularEntry.buildPopularPage(pageNum);
+        else
+            moviesInChosenOrderUri = MovieContract.TopRatedEntry.buildTopRatedPage(pageNum);
         return new CursorLoader(getActivity(),
-                movieInNowPlayingUri,
+                moviesInChosenOrderUri,
                 MOVIE_COLUMNS,
                 null,
                 null,
@@ -186,7 +192,7 @@ public class TabNowShowingFragment extends Fragment implements LoaderManager.Loa
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        mCursor=data;
+        mCursor = data;
         mMovieImageAdapterWithCursorAdapter.swapCursor(mCursor);
     }
 
@@ -197,7 +203,7 @@ public class TabNowShowingFragment extends Fragment implements LoaderManager.Loa
 
     @Override
     public void onDestroy() {
-        if(mCursor!=null && !mCursor.isClosed()) {
+        if (mCursor != null && !mCursor.isClosed()) {
             mCursor.close();
         }
         super.onDestroy();
