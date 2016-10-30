@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:xliff="http://schemas.android.com/tools">
     <string name="app_name">Popular Movies</string>
     <string name="action_settings">Settings</string>
 
@@ -24,4 +24,6 @@
     <string name="previous_button">Previous</string>
     <string name="next_button">Next</string>
     <string name="related_movies">Related Movies</string>
+
+    <string name="format_vote_average"><xliff:g id="vote_average">%1.0f</xliff:g>/10</string>
 </resources>

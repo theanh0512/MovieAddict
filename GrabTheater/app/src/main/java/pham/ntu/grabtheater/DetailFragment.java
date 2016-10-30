@@ -94,7 +94,7 @@ public class DetailFragment extends Fragment {
             updateViews();
 
             additionalUrl = mMovie.getId() + "/similar";
-            GetDataTask dataTaskForDetailActivity = new GetDataTask(this.getContext(),additionalUrl, true, 1);
+            GetDataTask dataTaskForDetailActivity = new GetDataTask(this.getContext(), additionalUrl, true, 1);
             dataTaskForDetailActivity.execute();
 
             gridview.setExpanded(true);
@@ -144,7 +144,7 @@ public class DetailFragment extends Fragment {
         titleTextview.setText(mMovie.getTitle());
         overviewTextview.setText(mMovie.getOverview());
         releaseDateTextview.setText(mMovie.getRelease_date());
-        voteAverageTextview.setText(Double.toString(mMovie.getVote_average()) + "/10");
+        voteAverageTextview.setText(this.getContext().getString(R.string.format_vote_average, mMovie.getVote_average()));
     }
 
     private void addYoutubeFragment() {

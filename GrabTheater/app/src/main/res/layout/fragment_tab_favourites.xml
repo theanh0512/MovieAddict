@@ -14,7 +14,7 @@
         android:verticalSpacing="10dp"
         android:horizontalSpacing="10dp"
         android:stretchMode="columnWidth"
-        android:listSelector="#ffff0000"
+        android:listSelector="@drawable/button_background_click"
         android:gravity="center"/>
 
 </FrameLayout>
