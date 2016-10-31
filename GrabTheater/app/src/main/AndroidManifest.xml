@@ -34,14 +34,16 @@
         <activity
             android:name=".SettingsActivity"
             android:label="@string/title_activity_settings"
-            android:parentActivityName=".MainActivity" >
+            android:parentActivityName=".MainActivity"
+            android:theme="@style/AppTheme">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="pham.ntu.grabtheater.MainActivity" />
         </activity>
+
         <provider
-            android:authorities="pham.ntu.grabtheater"
-            android:name=".data.MovieProvider" />
+            android:name=".data.MovieProvider"
+            android:authorities="pham.ntu.grabtheater" />
     </application>
 
 </manifest>
