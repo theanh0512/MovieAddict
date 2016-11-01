@@ -178,7 +178,7 @@ public class DetailFragment extends Fragment {
         String backdropImagePath = mMovie.getBackdrop_path();
         if (backdropImagePath.equals("null")) backdropImageView.setVisibility(View.GONE);
         else {
-            backdropImagePath = Config.IMG_BASE_URL
+            backdropImagePath = Config.IMG_BASE_URL_BACKDROP
                     + backdropImagePath + Config.PREFIX_API_KEY + Config.THE_MOVIE_DB_API_KEY;
             Picasso.with(getActivity()).load(backdropImagePath).resize(600,
                     400).onlyScaleDown().centerInside().placeholder(R.drawable.ic_place_holder)

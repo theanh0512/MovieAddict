@@ -26,4 +26,6 @@
     <string name="related_movies">Related Movies</string>
 
     <string name="format_vote_average"><xliff:g id="vote_average">%1.0f</xliff:g>/10</string>
+    <string name="backdrop_imageview_content_description">This is the backdrop image of this movie</string>
+    <string name="poster_imageview_content_description">This is the poster image of this movie</string>
 </resources>
