@@ -23,7 +23,9 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import pham.ntu.grabtheater.adapter.ImageAdapterWithCursorAdapter;
 import pham.ntu.grabtheater.data.MovieContract;
+import pham.ntu.grabtheater.entity.Movie;
 
 
 /**
@@ -37,8 +39,8 @@ import pham.ntu.grabtheater.data.MovieContract;
 public class TabNowShowingFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
     // TODO: Rename parameter arguments, choose names that match
 
-    static final int COL_MOVIE_ID = 0;
-    static final int COL_POSTER_PATH = 1;
+    public static final int COL_MOVIE_ID = 0;
+    public static final int COL_POSTER_PATH = 1;
     // TODO: Rename and change types of parameters
     private static final int MOVIE_LOADER = 0;
     private static final String[] MOVIE_COLUMNS = {

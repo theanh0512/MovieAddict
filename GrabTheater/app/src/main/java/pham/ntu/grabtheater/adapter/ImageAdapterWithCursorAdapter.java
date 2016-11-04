@@ -1,4 +1,4 @@
-package pham.ntu.grabtheater;
+package pham.ntu.grabtheater.adapter;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -13,10 +13,15 @@ import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
+import pham.ntu.grabtheater.Config;
+import pham.ntu.grabtheater.R;
+import pham.ntu.grabtheater.TabNowShowingFragment;
+import pham.ntu.grabtheater.entity.Movie;
+
 /**
  * Created by Administrator PC on 3/31/2016.
  */
-class ImageAdapterWithCursorAdapter extends CursorAdapter {
+public class ImageAdapterWithCursorAdapter extends CursorAdapter {
     private Context mContext;
     private String imagePath;
     private List<Movie> moviesList;

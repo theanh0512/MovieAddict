@@ -14,9 +14,13 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import pham.ntu.grabtheater.adapter.PagerAdapter;
+import pham.ntu.grabtheater.entity.Movie;
+
 public class MainActivity extends AppCompatActivity implements TabNowShowingFragment.OnFragmentInteractionListener, TabFavouritesFragment.OnFragmentInteractionListener, TabNowShowingFragment.ItemsListClickHandler {
 
     public static String additionalUrl = "now_playing";
+    public static PagerAdapter adapter;
     boolean dualPane;
     View detailFrame;
 
@@ -45,8 +49,8 @@ public class MainActivity extends AppCompatActivity implements TabNowShowingFrag
             tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
 
             final ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
-            final PagerAdapter adapter = new PagerAdapter
-                    (getSupportFragmentManager(), tabLayout.getTabCount());
+            adapter = new PagerAdapter
+                    (getSupportFragmentManager(), tabLayout.getTabCount(), this);
             viewPager.setAdapter(adapter);
             viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
             tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
@@ -79,14 +83,6 @@ public class MainActivity extends AppCompatActivity implements TabNowShowingFrag
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
-
-//    //Check whether there is an internet connection
-//    public boolean isOnline() {
-//        ConnectivityManager cm =
-//                (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-//        NetworkInfo netInfo = cm.getActiveNetworkInfo();
-//        return netInfo != null && netInfo.isConnectedOrConnecting();
-//    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {

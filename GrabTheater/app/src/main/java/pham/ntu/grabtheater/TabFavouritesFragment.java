@@ -21,6 +21,8 @@ import java.util.Set;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnItemClick;
+import pham.ntu.grabtheater.adapter.ImageAdapterWithBaseAdapter;
+import pham.ntu.grabtheater.entity.Movie;
 
 public class TabFavouritesFragment extends Fragment {
     public static SharedPreferences likedMovies;
@@ -35,9 +37,32 @@ public class TabFavouritesFragment extends Fragment {
         // Required empty public constructor
     }
 
+    public void invalidateGridview() {
+        favourite_gridview.invalidateViews();
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+
+        super.onCreate(savedInstanceState);
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
+
+        View rootView = inflater.inflate(R.layout.fragment_tab_favourites, container, false);
+        ButterKnife.bind(this, rootView);
+
+        updateFavouriteList();
+
+        favourite_gridview.setAdapter(mMovieImageAdapterWithBaseAdapter);
+        favourite_gridview.setDrawSelectorOnTop(false);
+        return rootView;
+    }
+
+    public void updateFavouriteList() {
         likedMovies = PreferenceManager.getDefaultSharedPreferences(getActivity().getApplicationContext());
         Gson gson = new Gson();
         moviesFavouriteList.clear();
@@ -50,20 +75,7 @@ public class TabFavouritesFragment extends Fragment {
                 moviesFavouriteList.add(movie);
             }
         }
-        super.onCreate(savedInstanceState);
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-
-        View rootView = inflater.inflate(R.layout.fragment_tab_favourites, container, false);
-        ButterKnife.bind(this, rootView);
         mMovieImageAdapterWithBaseAdapter = new ImageAdapterWithBaseAdapter(getActivity(), moviesFavouriteList);
-        favourite_gridview.setAdapter(mMovieImageAdapterWithBaseAdapter);
-        favourite_gridview.setDrawSelectorOnTop(false);
-        return rootView;
     }
 
     @OnItemClick(R.id.gridView_favourite)
@@ -71,7 +83,7 @@ public class TabFavouritesFragment extends Fragment {
         Movie movie = moviesFavouriteList.get(position);
         Bundle bundle = new Bundle();
         bundle.putParcelable("Movie", movie);
-        bundle.putBoolean("Hide Like Button", true);
+        bundle.putBoolean("Liked", true);
         Intent intent = new Intent(getActivity(), DetailActivity.class).putExtra("Bundle", bundle);
         startActivity(intent);
     }

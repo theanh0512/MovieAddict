@@ -10,6 +10,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -28,6 +29,10 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.OnItemClick;
+import pham.ntu.grabtheater.adapter.ImageAdapterWithBaseAdapter;
+import pham.ntu.grabtheater.entity.Movie;
+import pham.ntu.grabtheater.entity.Review;
+import pham.ntu.grabtheater.entity.Video;
 
 /**
  * Created by User on 12/10/2016.
@@ -36,6 +41,7 @@ import butterknife.OnItemClick;
 public class DetailFragment extends Fragment {
     public static List<Movie> moviesList = new ArrayList<>();
     public static List<Video> trailersList = new ArrayList<>();
+    public static List<Review> reviewsList = new ArrayList<>();
     public static ImageAdapterWithBaseAdapter mMovieImageAdapter;
     public static String additionalUrl = null;
     boolean isLiked = false;
@@ -50,11 +56,13 @@ public class DetailFragment extends Fragment {
     @BindView(R.id.like_button)
     com.like.LikeButton likeButton;
     @BindView(R.id.related_movies_gridView)
-    ExpandableListView gridview;
+    pham.ntu.grabtheater.ExpandableListView gridview;
     @BindView(R.id.backdrop_image)
     ImageView backdropImageView;
     @BindView(R.id.poster_image)
     ImageView posterImageView;
+    @BindView(R.id.button_view_review)
+    Button ViewReviewButton;
     private Movie mMovie;
     private YouTubePlayer YPlayer;
     private SharedPreferences sharedPreferences;
@@ -88,10 +96,15 @@ public class DetailFragment extends Fragment {
             GetDataTask dataTaskToLoadTrailers = new GetDataTask(this.getContext(), additionalUrlToGetTrailers, false);
             dataTaskToLoadTrailers.execute();
             if (getActivity().getClass() == MainActivity.class) likeButton.setVisibility(View.GONE);
-            if (details.containsKey("Hide Like Button")) likeButton.setVisibility(View.GONE);
+            if (details.containsKey("Liked")) isLiked = true;
             setUpImageViews();
 
             updateViews();
+
+            reviewsList.clear();
+            String additionalUrlToGetReiviews = mMovie.getId() + "/reviews";
+            GetDataTask dataTaskToLoadReviews = new GetDataTask(this.getContext(), additionalUrlToGetReiviews, false);
+            dataTaskToLoadReviews.execute();
 
             additionalUrl = mMovie.getId() + "/similar";
             GetDataTask dataTaskForDetailActivity = new GetDataTask(this.getContext(), additionalUrl, true, 1);
@@ -103,7 +116,7 @@ public class DetailFragment extends Fragment {
             gridview.setDrawSelectorOnTop(false);
             if (sharedPreferences.getStringSet("titleSet", null) != null
                     && sharedPreferences.getStringSet("titleSet", null).contains(mMovie.getTitle())) {
-                likeButton.setEnabled(false);
+                //likeButton.setEnabled(false);
                 likeButton.setLiked(true);
             }
 
@@ -122,22 +135,52 @@ public class DetailFragment extends Fragment {
         startActivity(intent);
     }
 
+    @OnClick(R.id.button_view_review)
+    public void onClickViewReview() {
+        Intent intent = new Intent(this.getActivity(), ReviewActivity.class);
+        startActivity(intent);
+    }
+
+
     @OnClick(R.id.like_button)
     public void onClick() {
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity().getApplicationContext());
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        Set<String> titleSet = sharedPreferences.getStringSet("titleSet", null);
-        if (titleSet == null) titleSet = new HashSet<>();
-        titleSet.add(mMovie.getTitle());
-        editor.putStringSet("titleSet", titleSet);
-        Gson gson = new Gson();
-        String json = gson.toJson(mMovie);
-        editor.putString(mMovie.getTitle(), json);
-        editor.apply();
-        editor.clear();
-        likeButton.setLiked(true);
-        likeButton.setEnabled(false);
-        isLiked = true;
+        if (!isLiked) {
+            SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity().getApplicationContext());
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            Set<String> titleSet = sharedPreferences.getStringSet("titleSet", null);
+            if (titleSet == null) titleSet = new HashSet<>();
+            titleSet.add(mMovie.getTitle());
+            editor.putStringSet("titleSet", titleSet);
+            Gson gson = new Gson();
+            String json = gson.toJson(mMovie);
+            editor.putString(mMovie.getTitle(), json);
+            editor.apply();
+            editor.clear();
+            likeButton.setLiked(true);
+            isLiked = true;
+            TabFavouritesFragment tabFavouritesFragment = (TabFavouritesFragment) MainActivity.adapter.getRegisteredFragment(1);
+            if (tabFavouritesFragment != null) {
+                tabFavouritesFragment.updateFavouriteList();
+                tabFavouritesFragment.invalidateGridview();
+            }
+        } else {
+            SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity().getApplicationContext());
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            Set<String> titleSet = sharedPreferences.getStringSet("titleSet", null);
+            if (titleSet == null) titleSet = new HashSet<>();
+            titleSet.remove(mMovie.getTitle());
+            editor.putStringSet("titleSet", titleSet);
+            editor.remove(mMovie.getTitle());
+            editor.apply();
+            editor.clear();
+            likeButton.setLiked(false);
+            isLiked = false;
+            TabFavouritesFragment tabFavouritesFragment = (TabFavouritesFragment) MainActivity.adapter.getRegisteredFragment(1);
+            if (tabFavouritesFragment != null) {
+                tabFavouritesFragment.updateFavouriteList();
+                tabFavouritesFragment.invalidateGridview();
+            }
+        }
     }
 
     public void updateViews() {

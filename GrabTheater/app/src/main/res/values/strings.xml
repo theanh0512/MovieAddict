@@ -6,7 +6,8 @@
     <string name="title_tab_favourites">Favourites</string>
 
     <!-- TODO: Remove or change this placeholder text -->
-    <string name="title_activity_detail">DetailActivity</string>
+    <string name="title_activity_detail">Movie Detail</string>
+    <string name="title_activity_review">Reviews</string>
 
     <string name="alert_message">There is no internet connection. Application only can display whatever has loaded previously.</string>
     <string name="alert_title">No Internet</string>
@@ -24,8 +25,10 @@
     <string name="previous_button">Previous</string>
     <string name="next_button">Next</string>
     <string name="related_movies">Related Movies</string>
+    <string name="review_string">Review(s)</string>
 
     <string name="format_vote_average"><xliff:g id="vote_average">%1.0f</xliff:g>/10</string>
     <string name="backdrop_imageview_content_description">This is the backdrop image of this movie</string>
     <string name="poster_imageview_content_description">This is the poster image of this movie</string>
+    <string name="view_review_button_text">Reviews</string>
 </resources>

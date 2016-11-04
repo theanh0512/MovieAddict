@@ -28,6 +28,9 @@ import pham.ntu.grabtheater.data.MovieContract.MovieEntry;
 import pham.ntu.grabtheater.data.MovieContract.NơwPlayingEntry;
 import pham.ntu.grabtheater.data.MovieContract.PopularEntry;
 import pham.ntu.grabtheater.data.MovieContract.TopRatedEntry;
+import pham.ntu.grabtheater.entity.Movie;
+import pham.ntu.grabtheater.entity.Review;
+import pham.ntu.grabtheater.entity.Video;
 
 /**
  * Created by Pham on 12/24/2015.
@@ -47,7 +50,7 @@ class GetDataTask extends AsyncTask<String, Void, List<String>> {
         mContext = context;
         this.additionalUrl = additionalUrl;
         this.containPages = containPages;
-        if(!isOnline()) {
+        if (!isOnline()) {
             displayNoInternetDialog();
         }
     }
@@ -57,9 +60,33 @@ class GetDataTask extends AsyncTask<String, Void, List<String>> {
         this.additionalUrl = additionalUrl;
         this.containPages = containPages;
         this.pageNum = pageNum;
-        if(!isOnline()) {
+        if (!isOnline()) {
             displayNoInternetDialog();
         }
+    }
+
+    public static String convertArrayToString(int[] array) {
+        String strSeparator = "__,__";
+        String str = "";
+        if (array != null) {
+            for (int i = 0; i < array.length; i++) {
+                str = str + array[i];
+                if (i < array.length - 1) {
+                    str = str + strSeparator;
+                }
+            }
+        }
+        return str;
+    }
+
+    public static int[] convertStringToArray(String str) {
+        String strSeparator = "__,__";
+        String[] arr = str.split(strSeparator);
+        int[] arrInt = new int[arr.length];
+        for (int i = 0; i < arr.length; i++) {
+            arrInt[i] = Integer.parseInt(arr[i]);
+        }
+        return arrInt;
     }
 
     private void displayNoInternetDialog() {
@@ -86,30 +113,6 @@ class GetDataTask extends AsyncTask<String, Void, List<String>> {
                 (ConnectivityManager) mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo netInfo = cm.getActiveNetworkInfo();
         return netInfo != null && netInfo.isConnectedOrConnecting();
-    }
-
-    public static String convertArrayToString(int[] array) {
-        String strSeparator = "__,__";
-        String str = "";
-        if (array != null) {
-            for (int i = 0; i < array.length; i++) {
-                str = str + array[i];
-                if (i < array.length - 1) {
-                    str = str + strSeparator;
-                }
-            }
-        }
-        return str;
-    }
-
-    public static int[] convertStringToArray(String str) {
-        String strSeparator = "__,__";
-        String[] arr = str.split(strSeparator);
-        int[] arrInt = new int[arr.length];
-        for (int i = 0; i < arr.length; i++) {
-            arrInt[i] = Integer.parseInt(arr[i]);
-        }
-        return arrInt;
     }
 
     @Override
@@ -168,6 +171,7 @@ class GetDataTask extends AsyncTask<String, Void, List<String>> {
             if (Objects.equals(additionalUrl, MainActivity.additionalUrl))
                 TabNowShowingFragment.moviesList.clear();
             if (additionalUrl.contains("similar")) DetailFragment.moviesList.clear();
+            if (additionalUrl.contains("reviews")) DetailFragment.reviewsList.clear();
 
             int len = jArray.length();
             Vector<ContentValues> cVVector = new Vector<>(len);
@@ -203,7 +207,7 @@ class GetDataTask extends AsyncTask<String, Void, List<String>> {
                     ContentValues movieValues = new ContentValues();
                     movieValues.put(MovieEntry.COLUMN_MOVIE_ID, id);
                     movieValues.put(MovieEntry.COLUMN_POSTER_PATH, poster_path);
-                    movieValues.put(MovieEntry.COLUMN_IS_ADULT, (adult = true) ? 1 : 0);
+                    movieValues.put(MovieEntry.COLUMN_IS_ADULT, (adult) ? 1 : 0);
                     movieValues.put(MovieEntry.COLUMN_OVERVIEW, overview);
                     movieValues.put(MovieEntry.COLUMN_RELEASE_DATE, release_date);
                     movieValues.put(MovieEntry.COLUMN_GENRE_IDS, stringGenreIds);
@@ -213,7 +217,7 @@ class GetDataTask extends AsyncTask<String, Void, List<String>> {
                     movieValues.put(MovieEntry.COLUMN_BACKDROP_PATH, backdrop_path);
                     movieValues.put(MovieEntry.COLUMN_POPULARITY, popularity);
                     movieValues.put(MovieEntry.COLUMN_VOTE_COUNT, vote_count);
-                    movieValues.put(MovieEntry.COLUMN_HAS_VIDEO, (video = true) ? 1 : 0);
+                    movieValues.put(MovieEntry.COLUMN_HAS_VIDEO, (video) ? 1 : 0);
                     movieValues.put(MovieEntry.COLUMN_VOTE_AVERAGE, vote_average);
 
                     if (additionalUrl.contains("playing")) {
@@ -248,7 +252,7 @@ class GetDataTask extends AsyncTask<String, Void, List<String>> {
                         DetailFragment.moviesList.add(new Movie(adult, backdrop_path, genre_ids, id, original_language, original_title,
                                 overview, release_date, poster_path, popularity, title, video, vote_average, vote_count));
                     }
-                } else {
+                } else if (additionalUrl.contains("videos")) {
                     String id = json.getString("id");
                     String iso_639_1 = json.getString("iso_639_1");
                     String key = json.getString("key");
@@ -257,6 +261,11 @@ class GetDataTask extends AsyncTask<String, Void, List<String>> {
                     int size = json.getInt("size");
                     String type = json.getString("type");
                     DetailFragment.trailersList.add(new Video(id, iso_639_1, key, name, site, size, type));
+                } else {
+                    String id = json.getString("id");
+                    String author = json.getString("author");
+                    String content = json.getString("content");
+                    DetailFragment.reviewsList.add(new Review(id, author, content));
                 }
             }
 
@@ -288,8 +297,6 @@ class GetDataTask extends AsyncTask<String, Void, List<String>> {
 
     @Override
     protected void onPostExecute(List<String> strings) {
-//        if (Objects.equals(additionalUrl, MainActivity.additionalUrl))
-//            TabNowShowingFragment.mMovieImageAdapterWithCursorAdapter.notifyDataSetChanged();
         if (Objects.equals(additionalUrl, DetailFragment.additionalUrl))
             DetailFragment.mMovieImageAdapter.notifyDataSetChanged();
     }

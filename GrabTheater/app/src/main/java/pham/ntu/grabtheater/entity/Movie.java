@@ -1,4 +1,4 @@
-package pham.ntu.grabtheater;
+package pham.ntu.grabtheater.entity;
 
 import android.os.Parcel;
 import android.os.Parcelable;
