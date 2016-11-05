@@ -7,18 +7,16 @@ Find any typos? Any ideas that you think they can help to improve the project? C
 
 First, fork this repository.
 
-![Fork Icon](images/fork-icon.png)
+(github-windows://openRepo/https://github.com/theanh0512/MovieAddict)
 
 Next, clone this repository to your desktop to make changes.
 
 ```sh
-$ git clone {git@github.com:theanh0512/MovieAddict.git}
+$ git clone git@github.com:theanh0512/MovieAddict.git
 $ cd MovieAddict
 ```
 
 Once you've pushed changes to your local repository, you can issue a pull request by clicking on the green pull request icon.
-
-![Pull Request Icon](images/pull-request-icon.png)
 
 Inside Config class:
 
