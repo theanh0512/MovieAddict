@@ -1,5 +1,5 @@
 # Movie Addict Application (Android)
-Applicaiton that uses API from https://www.themoviedb.org/  to get the list of movies. It will show the movies details, trailers and related movies as well as reviews from users
+Application that uses API from https://www.themoviedb.org/  to get the list of movies. It will show the movies details, trailers and related movies as well as reviews from users
 
 ## How to Contribute
 
